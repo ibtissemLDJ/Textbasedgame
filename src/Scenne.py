@@ -1,7 +1,13 @@
 import pygame
 import time
 points =0 
+global score
+score=0
+joueur =""
 import random
+
+
+pygame.init()
 image1 = pygame.image.load("images/téléchargement (19).png")
 image2 = pygame.image.load("images/téléchargement (42) (1).png")
 image3 = pygame.image.load("images/téléchargement (32).png")
@@ -43,15 +49,92 @@ imageScene_level1_s2_beatyes=pygame.image.load("images\gameover.jpg")
 imageScene_level1_s2_noswiming=pygame.image.load("images\\boat.png")
 imageScene_level1_s1__=pygame.image.load("images\sea.png")
 image1 = pygame.image.load("images/Поезд пиксель арт 1 (1).png")
+pause_img = pygame.image.load("images/photo_2024-05-04_10-38-42.png")
+
+
+def get_scene_by_name(scene_name):
+    global_scene = globals()
+    if scene_name in global_scene:
+        scene_class = global_scene[scene_name]
+        if callable(scene_class):  # Vérifie si c'est une classe (callable)
+            return scene_class()
+    return None
+
+
+def sauvegarder_partie(nom_joueur, score, nomScene):
+    with open("sauvegarder/sauvegarde.txt", "a") as fichier:
+        fichier.write(f"{nom_joueur}\n")
+        fichier.write(f"{score}\n")
+        fichier.write(f"{nomScene}\n")
+
+def charger_partie(nom_joueur):
+    try:
+        with open("sauvegarder/sauvegarde.txt", "r") as fichier:
+            for ligne in fichier:
+                nom = ligne.strip()
+                score = int(fichier.readline().strip())
+                scene = fichier.readline().strip()
+                if nom == nom_joueur:
+                    return nom, score, scene
+
+    except FileNotFoundError:
+        print("Aucune sauvegarde trouvée.")
+        return None, None, None
+
+
+class Popup():
+    def __init__(self, x, y, width, height, message):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.message = message
+        self.rect = pygame.Rect(x, y, width, height)
+        self.font = pygame.font.SysFont(None, 28)
+        self.bg_color = (0, 0, 0)
+        self.text_color = (0, 255, 0)
+        self.visible = False
+
+    def draw(self, screen):
+        if self.visible:
+            pygame.draw.rect(screen, self.bg_color, self.rect)
+            text_surface = self.font.render(self.message, True, self.text_color)
+            text_rect = text_surface.get_rect(center=self.rect.center)
+            screen.blit(text_surface, text_rect)
+
+
+class Button() :
+    def  __init__(self, x ,y , image):
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x,y)
+        self.clicked = False
+
+    def draw(self, screen,nom_joueur, score, scene):
+        screen.blit(self.image, self.rect)
+        pos = pygame.mouse.get_pos()
+        if self.rect.collidepoint(pos) :
+            if pygame.mouse.get_pressed()[0] ==1 and self.clicked ==False :
+                sauvegarder_partie(nom_joueur, score, scene)
+                popup.visible = True
+                self.clicked = True
+                
+
+popup = Popup(150, 150, 200, 50, "well saved game")
+button = Button(100 , 100 , pause_img)
+
 
 class Scene:
-    def __init__(self, text, image=None, actions=None, action_key_mapping=None, sound=None):
+    def __init__(self, text, image=None, actions=None, action_key_mapping=None, sound=None, fontt="Comic Sans MS"):
         self.text = text
         self.image = image
         self.actions = actions or []
         self.action_key_mapping = action_key_mapping or {}
         self.sound = sound
         self.finished_typing = False  # Flag to indicate when typing animation is finished
+        self.sound_played =False
+        
+        
 
     def draw(self, screen):
         # Render text and optionally draw the image
@@ -59,18 +142,20 @@ class Scene:
             screen.blit(self.image, (0, 0))
 
         # Dark background for text
-        pygame.draw.rect(screen, (0, 0, 0), (0, 310, 800, 170))
+       ## pygame.draw.rect(screen, (0, 0, 0), (0, 400, 800, 170))
 
         # Play sound if available
         if self.sound:
+           if not self.sound_played:
             celtic_song = pygame.mixer.Sound(self.sound)
             celtic_song.set_volume(1.0)
             celtic_song.play()
+            self.sound_played = True
 
         # Render multiline text on the dark background
-        font = pygame.font.SysFont("Comic Sans MS", 17)#nsewerha 
+        font = pygame.font.SysFont(self.fontt, 17)#nsewerha 
         lines = self.text.split('\n')
-        y_offset = 320
+        y_offset = 410
         if self.finished_typing:
             for line in lines:
                 text_surface = font.render(line, True, 'white')
@@ -100,6 +185,146 @@ class Scene:
                     print("Mapped Action:", action)
                     return action
         return None
+#######################################IBTISSEM############################################################
+class background(Scene):
+    def __init__(self):
+        super().__init__(
+            "\n\n\n\n\n                                                                 Tap enter to start playing XD",
+            image=pygame.image.load("images/Frame 1707478369 (2).png") ,
+            actions=["next"],
+            action_key_mapping={"next": pygame.K_RETURN},
+            sound="sounds/theres-something-about-this-room-201112.mp3"
+        )
+
+    def handle_input(self, event):
+        action = super().handle_input(event)
+        if action == "next":
+            return debut()
+        else:
+            return None
+
+
+
+class debut(Scene):
+   def __init__(self):
+        super().__init__(
+            "\n\n\n\n                                                                              \>",
+            image= pygame.image.load("images/Frame 1707478369.png"),
+            actions=["next"],
+            action_key_mapping={"next": pygame.K_RETURN}
+        )
+        self.answer1 = "newlevel"
+        self.answer2 = "continue"
+        self.user_input = ""
+
+   def draw(self, screen):
+        super().draw(screen)
+        font = pygame.font.SysFont("Comic Sans MS", 17)
+        user_input_surface = font.render(self.user_input, True, 'white')
+        screen.blit(user_input_surface, (435, 527))  
+
+   def handle_input(self, event):
+        action = super().handle_input(event)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                self.user_input = self.user_input[:-1]
+            elif event.key == pygame.K_RETURN:
+              if self.user_input.lower() == self.answer1 :
+                 return name() 
+              elif self.user_input.lower() == self.answer2 :
+               return nameCONTINUE() # ta3 continue 
+            else:
+                # Check if the pressed key is alphanumeric
+                if event.unicode.isalnum():
+                    self.user_input += event.unicode.lower()
+        return self      
+class name(Scene): 
+    def __init__(self):
+        super().__init__(
+            "Hello user!\nPlease enter your name:",
+            image=pygame.image.load("images/Frame 1707478369.png"),
+            actions=["next"],
+            action_key_mapping={"next": pygame.K_RETURN}
+        )
+        self.user_input = ""
+        self.joueur = ""  # Initialize joueur
+
+    def draw(self, screen):
+        super().draw(screen)
+        font = pygame.font.SysFont("Comic Sans MS", 17)
+        user_input_surface = font.render(self.user_input, True, 'white')
+        screen.blit(user_input_surface, (415, 300))  
+
+    def handle_input(self, event):
+        action = super().handle_input(event)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                self.user_input = self.user_input[:-1]
+            elif event.key == pygame.K_RETURN:
+                if self.user_input:  # Check if there's input
+                    self.joueur = self.user_input  # Save user input to joueur
+                    self.user_input = ""  # Reset user input for next use
+                    return START()  # Return next scene if needed
+            elif event.unicode.isalnum():
+                self.user_input += event.unicode.lower()
+
+        return self
+    
+
+
+class nameCONTINUE(Scene): 
+    def __init__(self):
+        super().__init__(
+            "Hello user!\nPlease enter your name:",
+            image=pygame.image.load("images/Frame 1707478369.png"),
+            actions=["next"],
+            action_key_mapping={"next": pygame.K_RETURN}
+        )
+        self.user_input = ""
+        self.joueur = ""  # Initialize joueur
+
+    def draw(self, screen):
+        super().draw(screen)
+        font = pygame.font.SysFont("Comic Sans MS", 17)
+        user_input_surface = font.render(self.user_input, True, 'white')
+        screen.blit(user_input_surface, (415, 300))  
+
+    def handle_input(self, event):
+        action = super().handle_input(event)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                self.user_input = self.user_input[:-1]
+            elif event.key == pygame.K_RETURN:
+                if self.user_input:  # Check if there's input
+                    self.joueur = self.user_input  # Save user input to joueur
+                    self.user_input = ""  # Reset user input for next use
+                    nom , score, scene = charger_partie(joueur)
+                    scene1 = get_scene_by_name(scene)
+                    return scene1  # Return next scene if needed
+            elif event.unicode.isalnum():
+                self.user_input += event.unicode.lower()
+
+        return self
+
+
+
+
+class START(Scene):
+    def __init__(self):
+        super().__init__(
+            "Step-step  Step-step ... ",
+           
+            actions=["next"],
+            action_key_mapping={"next": pygame.K_RETURN},
+            sound="sounds/theres-something-about-this-room-201112.mp3"
+        )
+
+    def handle_input(self, event):
+        action = super().handle_input(event)
+        if action == "next":
+            return BlackScene()
+        else:
+            return None
 ##########################################sofia############################################################
 
 class WoodsScene(Scene):
@@ -254,8 +479,8 @@ class Scene_level1_1(Scene):#done debut of level
             "            \n\n              ETHERIA 'THE LOST LAND ',2024      ",
             image=image_l1_1,
             actions=["next"],
-            action_key_mapping={"next": pygame.K_RETURN},
-            
+            action_key_mapping={"next": pygame.K_RETURN}
+           
         )
 
     def handle_input(self, event):
@@ -265,6 +490,8 @@ class Scene_level1_1(Scene):#done debut of level
         else:
             return None
     def show(self):
+
+       
         woods_sound = pygame.mixer.Sound("sounds\singing-club-of-birds_nature-sound-204240.mp3")
         woods_sound.play()
 class Scene_level1_2(Scene):#done scenne 2 de level
@@ -325,7 +552,7 @@ class Scene_level1_5(Scene):#scene5 level
             ,
             image=imageScene_level1_5,
             actions=["the land road","the sea road"],
-            action_key_mapping={"the land raod": pygame.K_1, "the sea road": pygame.K_2},
+            action_key_mapping={"the land road": pygame.K_1, "the sea road": pygame.K_2},
             
         )
 
@@ -575,20 +802,47 @@ class ThinkScene(Scene):
 class TheftScene(Scene):
     def __init__(self):
         super().__init__(
-            "Oops, the little dwarf steals your map,\n what to do right now !! The dwarf told you that you have to solve this question to get back \nyour map :I am taken once every minute, twice every moment, but never in an hour. What am I?",
+            "Oops, the little dwarf steals your map,\n what to do right now !! The dwarf told you that you have to solve this question to get back \nyour map :I am taken once every minute, twice every moment, but never in an hour. What am I? \nTap enter to write your answer !",
             image=pygame.image.load("images/TheftScene.png"),
-            actions=["m"],
-            action_key_mapping={"m": pygame.K_m}
+            actions=["next"],
+            action_key_mapping={"next": pygame.K_RETURN}
         )
 
     def handle_input(self, event):
         action = super().handle_input(event)
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_m:  # Check for 'm' key press only
-            if action == "m":
-                return MapScene()
-            
-        elif event.type == pygame.KEYDOWN:
-            return HelpScene() 
+        if action == "next":
+            return theM()
+        else :
+            return None
+class theM(Scene):
+    def __init__(self):
+        super().__init__(
+            " enter your answer : ",
+            image= enigma,
+            actions=["next"],
+            action_key_mapping={"next": pygame.K_RETURN}
+        )
+        self.answer = "m"
+        self.user_input = ""
+
+    def draw(self, screen):
+        super().draw(screen)
+        font = pygame.font.SysFont("Arial", 17)
+        user_input_surface = font.render(self.user_input, True, 'white')
+        screen.blit(user_input_surface, (10, 430))  
+
+    def handle_input(self, event):
+        action = super().handle_input(event)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                self.user_input = self.user_input[:-1]  
+            elif event.key == pygame.K_RETURN:
+                return MapScene() if self.user_input.lower() == self.answer else HelpScene()
+            else:
+                
+                if pygame.key.name(event.key).isalpha():
+                    self.user_input += pygame.key.name(event.key).lower()
+        return self        
 class HelpScene(Scene):
     def __init__(self):
         super().__init__(
@@ -628,37 +882,33 @@ class ScoreScene(Scene):
 class HelpActScene(Scene):
     def __init__(self):
         super().__init__(
-            "  the answer is a letter",
+            "The answer is a letter\n\n\n\nTap enter to fill your answer!",
             image=pygame.image.load("images/TheftScene.png"),
-            actions=["m"],
-            action_key_mapping={"m": pygame.K_m}
+            actions=["next"],
+            action_key_mapping={"next": pygame.K_RETURN}
         )
         
     def handle_input(self, event):
        action = super().handle_input(event)
-       if event.type == pygame.KEYDOWN and event.key == pygame.K_m:  # Check for 'm' key press only
-            if action == "m":
-                return MapScene()
-            
-       elif event.type == pygame.KEYDOWN:
-            return HelpScene() 
+       if action == "next":
+           return theM()
+       else :
+           return None
 class NoHelpScene(Scene):
     def __init__(self):
         super().__init__(
-            "try again...",
+            "try again... \n\n\n\n Tap enter to write your answer!",
             image=pygame.image.load("images/TheftScene.png"),
-            actions=["m"],
-            action_key_mapping={"m": pygame.K_m}
+            actions=["next"],
+            action_key_mapping={"next": pygame.K_RETURN}
         )
 
     def handle_input(self, event):
         action = super().handle_input(event)
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_m:  # Check for 'm' key press only
-            if action == "m":
-                return MapScene()
-            
-        elif event.type == pygame.KEYDOWN:
-            return HelpScene()       
+        if action == "next": 
+            return theM()
+        else :
+            return None
 class MapScene(Scene):
     def __init__(self):
         super().__init__(
@@ -933,7 +1183,7 @@ class Presence(Scene):
 
     def draw(self, screen):
         super().draw(screen)
-        font = pygame.font.SysFont("Arial", 17)
+        font = pygame.font.SysFont("Comic Sans MS", 17)
         user_input_surface = font.render(self.user_input, True, 'white')
         screen.blit(user_input_surface, (10, 430))  
 
@@ -1188,54 +1438,64 @@ class Tie(Scene):
 class Scene38(Scene):
     def __init__(self):
         super().__init__(
-            "You red the enigma writting in the wall of the cave, it says: \nThe first box is in the left of the third one, the fourth one is in the right of the second one,  \nand the third one is in the left of the fourth. How are the boxes organised??",
+            "You red the enigma writting in the wall of the cave, it says: \nThe first box is in the left of the third one, the fourth one is in the right of the second one,  \nand the third one is in the left of the fourth. How are the boxes organised?? \nTap enter to write your answer !",
             image=image4,
-            actions=[],
-            action_key_mapping={}
+            actions=["next"],
+            action_key_mapping={"next":pygame.K_RETURN}
         )
-        self.input_sequence = ""
     def handle_input(self, event):
         action = super().handle_input(event)
+        if action =="next":
+            return Scene38answer()
+        else :
+            return None
 
+class Scene38answer(Scene):
+   def __init__(self):
+        super().__init__(
+            "enter your answer : ",
+            image= enigma,
+            actions=["next"],
+            action_key_mapping={"next": pygame.K_RETURN}
+        )
+        self.answer = "1324"
+        self.user_input = ""
+
+   def draw(self, screen):
+        super().draw(screen)
+        font = pygame.font.SysFont("Comic Sans MS", 17)
+        user_input_surface = font.render(self.user_input, True, 'white')
+        screen.blit(user_input_surface, (10, 430))  
+
+   def handle_input(self, event):
+        action = super().handle_input(event)
         if event.type == pygame.KEYDOWN:
-             if len(self.input_sequence) < 4:
-                 self.input_sequence += event.unicode
-             if len(self.input_sequence) == 4:
-              return self.check_input()
-
-    def check_input(self):
-        if self.input_sequence == "3421":
-            return Scene39()
-        else:
-            return Scene39B()
-
+            if event.key == pygame.K_BACKSPACE:
+                self.user_input = self.user_input[:-1]
+            elif event.key == pygame.K_RETURN:
+                return Scene39() if self.user_input.lower() == self.answer else Scene39B()
+            else:
+                # Check if the pressed key is alphanumeric
+                if event.unicode.isalnum():
+                    self.user_input += event.unicode.lower()
+        return self  
 
 
 class Scene39B(Scene):
     def __init__(self):
         super().__init__(
-            "Try again ",
+            "Try again \nplease Tap enter to write your answer !",
             image=image6,
-            actions=[],
-            action_key_mapping={},
-            sound="wawawah.mp3"
+            actions=["next"],
+            action_key_mapping={"next":pygame.K_RETURN},
+            sound="sounds/wawawah.mp3"
         )
-
-        self.input_sequence = ""
-
     def handle_input(self, event):
         action = super().handle_input(event)
-        if event.type == pygame.KEYDOWN:
-            if len(self.input_sequence) < 4:
-                self.input_sequence += event.unicode
-            if len(self.input_sequence) == 4:
-             return self.check_input()
-
-    def check_input(self):
-         if self.input_sequence == "3421":
-            return Scene39()
-         else:
-                return Scene39B()
+        if action =="next":
+            return Scene38answer()
+        else :
+            return None
 
 
 
@@ -1246,7 +1506,7 @@ class Scene39(Scene):
             image=image2,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
-            sound="congratulations.mp3"
+            sound="sounds/congratulations.mp3"
         )
 
     def handle_input(self, event):
@@ -1290,7 +1550,7 @@ class Random(Scene):
             image=image5,
             actions=[],
             action_key_mapping={},
-            sound = "game-over-31-179699.mp3"
+            sound = "sounds/game-over-31-179699.mp3"
          )
         elif random_number > 8 :
          super().__init__(
@@ -1298,7 +1558,7 @@ class Random(Scene):
             image=image2,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
-            sound = "bonus-points-190035.mp3"
+            sound = "sounds/bonus-points-190035.mp3"
          )
 
     def handle_input(self, event):
@@ -1371,47 +1631,43 @@ class Scene43(Scene):
             actions=[],
             action_key_mapping={}
         )
-        self.input_sequence =""
+        self.answer = "etheria"
+        self.user_input = ""
+
+    def draw(self, screen):
+        super().draw(screen)
+        font = pygame.font.SysFont("Arial", 17)
+        user_input_surface = font.render(self.user_input, True, 'white')
+        screen.blit(user_input_surface, (10, 430))  
 
     def handle_input(self, event):
         action = super().handle_input(event)
         if event.type == pygame.KEYDOWN:
-         if len(self.input_sequence) < 6:
-                self.input_sequence += event.unicode
-         if len(self.input_sequence) == 6:
-                return self.check_input()
-
-    def check_input(self):
-     if self.input_sequence == "etheria" or self.input_sequence =="ETHERIA":
-         return Scene44()
-     else:
-      return Scene43B()
-
+            if event.key == pygame.K_BACKSPACE:
+                self.user_input = self.user_input[:-1]
+            elif event.key == pygame.K_RETURN:
+                return Scene44() if self.user_input.lower() == self.answer else Scene43B()
+            else:
+                # Check if the pressed key is alphanumeric
+                if event.unicode.isalnum():
+                    self.user_input += event.unicode.lower()
+        return self
 class Scene43B(Scene):
+ 
     def __init__(self):
         super().__init__(
-            "Try again ",
+            "Try again \nplease Tap enter to write your answer !",
             image=image6,
-            actions=[],
-            action_key_mapping={},
-            sound="wawawah.mp3"
+            actions=["next"],
+            action_key_mapping={"next":pygame.K_RETURN},
+            sound="sounds/wawawah.mp3"
         )
-
-        self.input_sequence = ""
-
     def handle_input(self, event):
         action = super().handle_input(event)
-        if event.type == pygame.KEYDOWN:
-            if len(self.input_sequence) <6:
-                self.input_sequence += event.unicode
-            if len(self.input_sequence) == 6:
-             return self.check_input()
-
-    def check_input(self):
-         if self.input_sequence == "etheria" or self.input_sequence =="ETHERIA":
-            return Scene44()
-         else:
-                return Scene43B()
+        if action =="next":
+            return Scene43()
+        else :
+            return None
 
 
 class Scene44(Scene):
@@ -1489,9 +1745,9 @@ class Scene48(Scene):
     def handle_input(self, event):
         action = super().handle_input(event)
         if action == "one":
-            return Scene48B()
-        elif action == "two":
             return Scene49()
+        elif action == "two":
+            return Scene48B()
         else:
             return None
 
@@ -1500,15 +1756,15 @@ class Scene48B(Scene):
         super().__init__(
             "Oops the door can't be broke. T.\n1/ Search for a hint in the door. \n2/ Use a tree branch to broke the door.",
             actions=["one","two"],
-            action_key_mapping={"one": pygame.K_1 , "two": pygame.K_0}
+            action_key_mapping={"one": pygame.K_1 , "two": pygame.K_2}
         )
 
     def handle_input(self, event):
         action = super().handle_input(event)
         if action == "one":
-            return Scene48B()
-        elif action == "two":
             return Scene49()
+        elif action == "two":
+            return Scene48B()
         else:
             return None
 
@@ -1516,54 +1772,64 @@ class Scene48B(Scene):
 class Scene49(Scene):
     def __init__(self):
         super().__init__(
-            "you looked in the door and you find somthing saying: \n 'The letters are numbers and the numbers are pins, in this land the magic wins. \n",
-            actions=[],
-            action_key_mapping={}
+            "you looked in the door and you find somthing saying: \n 'The letters are numbers and the numbers are pins, in this land the magic wins. \nTape enter to write your answer !",
+            actions=["next"],
+            action_key_mapping={"next":pygame.K_RETURN}
         )
-        self.input_sequence = ""
 
     def handle_input(self, event):
-         action = super().handle_input(event)
-
-         if event.type == pygame.KEYDOWN:
-             if len(self.input_sequence) < 9:
-                    self.input_sequence += event.unicode
-             if len(self.input_sequence) == 9:
-                return self.check_input()
-
-    def check_input(self):
-          if self.input_sequence == "520851891":
-              return Scene50()
-          else:
-                return Scene49B()
+     action = super().handle_input(event)
+     if action == "next":
+       return Scene49answer()
+     else :
+         return None 
 
 
+class Scene49answer(Scene):
+  def __init__(self):
+        super().__init__(
+            " enter your answer : ",
+            image= enigma,
+            actions=["next"],
+            action_key_mapping={"next": pygame.K_RETURN}
+        )
+        self.answer =  "520851891"
+        self.user_input = ""
+
+  def draw(self, screen):
+        super().draw(screen)
+        font = pygame.font.SysFont("Arial", 17)
+        user_input_surface = font.render(self.user_input, True, 'white')
+        screen.blit(user_input_surface, (10, 430))  
+
+  def handle_input(self, event):
+        action = super().handle_input(event)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                self.user_input = self.user_input[:-1]
+            elif event.key == pygame.K_RETURN:
+                return Scene50() if self.user_input.lower() == self.answer else Scene49B()
+            else:
+                # Check if the pressed key is alphanumeric
+                if event.unicode.isalnum():
+                    self.user_input += event.unicode.lower()
+        return self
 
 class Scene49B(Scene):
     def __init__(self):
         super().__init__(
-            "Try again ",
+            "Try again \n\nTap enter to write your answer!",
             image=image6,
-            actions=[],
-            action_key_mapping={},
-            sound="wawawah.mp3"
+            actions=["next"],
+            action_key_mapping={"next":pygame.K_RETURN}
         )
 
-        self.input_sequence = ""
-
     def handle_input(self, event):
-        action = super().handle_input(event)
-        if event.type == pygame.KEYDOWN:
-            if len(self.input_sequence) < 9:
-                self.input_sequence += event.unicode
-            if len(self.input_sequence) == 9:
-             return self.check_input()
-
-    def check_input(self):
-         if self.input_sequence == "520851891":
-            return Scene50()
-         else:
-                return Scene49B()
+     action = super().handle_input(event)
+     if action == "next":
+       return Scene49answer()
+     else :
+         return None 
 
 
 
@@ -1574,7 +1840,7 @@ class Scene50(Scene):
             image=image2,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
-            sound="congratulations.mp3"
+            sound="sounds/congratulations.mp3"
         )
 
 
@@ -1633,7 +1899,7 @@ class FlowerEnigma(Scene):
     def __init__(self):
        
         super().__init__(
-            "enigma : \" the first box is in the left of the third one, the fourth one\nis in the right of the second one and the third one is in the left of \nthe fourth one \",\nhow are the boxese organized ?",
+            "enigma : \" the first box is in the left of the third one, the fourth one\nis in the right of the second one and the third one is in the left of \nthe fourth one \",\nhow are the boxese organized ?\n\n\n\n Please Tap enter you give your answer",
             image=pygame.image.load("images/Frame 1707478366 (5).png"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -1642,7 +1908,7 @@ class FlowerEnigma(Scene):
     def handle_input(self, event):
         action = super().handle_input(event)
         if action == "next":
-            return FlowerHappy ()
+            return floweranswer ()
         else:
             return None
 
@@ -1650,6 +1916,36 @@ class FlowerEnigma(Scene):
         woods_sound = pygame.mixer.Sound("sounds/theres-something-about-this-room-201112.mp3")
         woods_sound.play()
         woods_sound.play()
+#########################################################################################################
+class floweranswer(Scene):
+   def __init__(self):
+        super().__init__(
+            " enter your answer : ",
+            image= enigma,
+            actions=["next"],
+            action_key_mapping={"next": pygame.K_RETURN}
+        )
+        self.answer = "1324"
+        self.user_input = ""
+
+   def draw(self, screen):
+        super().draw(screen)
+        font = pygame.font.SysFont("Arial", 17)
+        user_input_surface = font.render(self.user_input, True, 'white')
+        screen.blit(user_input_surface, (10, 430))  
+
+   def handle_input(self, event):
+        action = super().handle_input(event)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                self.user_input = self.user_input[:-1]
+            elif event.key == pygame.K_RETURN:
+                return FlowerHappy() if self.user_input.lower() == self.answer else FlowerError()
+            else:
+                # Check if the pressed key is alphanumeric
+                if event.unicode.isalnum():
+                    self.user_input += event.unicode.lower()
+        return self
 #########################################################################################################
    ## my Fourth scene 
 class FlowerHappy (Scene):
@@ -1686,7 +1982,7 @@ class FlowerError(Scene):
     def handle_input(self, event):
         action = super().handle_input(event)
         if action == "one":
-            return FlowerEnigma()
+            return floweranswer()
         else:
             return None
  
@@ -1995,28 +2291,34 @@ class Paper(Scene):
 
 #######################################################################################################
 class TapEnigma(Scene):
-    def __init__(self):
-        
+  def __init__(self):
         super().__init__(
-            "Tap The Answer :",
-            image=image1,
-            actions=["text"],
-            action_key_mapping={"text":pygame.TEXTINPUT},
-            sound="sounds/theres-something-about-this-room-201112.mp3"
+            " Tap your answer : ",
+            image= enigma,
+            actions=["next"],
+            action_key_mapping={"next": pygame.K_RETURN}
         )
-   
-    def handle_input(self, event):
+        self.answer = "oxygen"
+        self.user_input = ""
+
+  def draw(self, screen):
+        super().draw(screen)
+        font = pygame.font.SysFont("Comic Sans MS", 17)
+        user_input_surface = font.render(self.user_input, True, 'white')
+        screen.blit(user_input_surface, (10, 430))  
+
+  def handle_input(self, event):
         action = super().handle_input(event)
-        if action == "next":
-            return Gazepipes()
-        else:
-            return None
-
-
-    def show(self):
-        woods_sound = pygame.mixer.Sound("sounds/theres-something-about-this-room-201112.mp3")
-        woods_sound.play()
-        woods_sound.play()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                self.user_input = self.user_input[:-1]  
+            elif event.key == pygame.K_RETURN:
+                return helloScene() if self.user_input.lower() == self.answer else Tryagain()
+            else:
+                
+                if pygame.key.name(event.key).isalpha():
+                    self.user_input += pygame.key.name(event.key).lower()
+        return self
 
 
 ########################################################LINA#############################################################
@@ -2060,7 +2362,7 @@ class  aftertrain(Scene):
 class  aftercastle(Scene): 
     def __init__(self):
         super().__init__(
-            " When you arrive at the castle\n, there is a large gold door that is so big that you can barely see the end. \nIt is written there\n: if you arrived to the castle, so for sure you solved three enigmas, \nand you have two letters by your hand, \ngive me the two letters and I'll give you the third one and let you in. ",
+            " When you arrive at the castle\n, there is a large gold door that is so big that you can barely see the end. \nIt is written there\n: if you arrived to the castle, so for sure you solved three enigmas, \nand you have two letters by your hand, \ngive me the two letters and I'll give you the third one and let you in. \nTap enter to write the letters",
             image=pygame.image.load("images/golden door (1).png"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -2073,13 +2375,60 @@ class  aftercastle(Scene):
             return inthecastle()
         else:
             return None
-    
+class theletters(Scene):
+  def __init__(self):
+        super().__init__(
+            "The letters : ",
+            image= enigma,
+            actions=["next"],
+            action_key_mapping={"next": pygame.K_RETURN}
+        )
+        self.answer = "e r"
+        self.user_input = ""
+
+  def draw(self, screen):
+        super().draw(screen)
+        font = pygame.font.SysFont("Arial", 17)
+        user_input_surface = font.render(self.user_input, True, 'white')
+        screen.blit(user_input_surface, (10, 430))  
+
+  def handle_input(self, event):
+        action = super().handle_input(event)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                self.user_input = self.user_input[:-1]
+            elif event.key == pygame.K_RETURN:
+                return inthecastle() if self.user_input.lower() == self.answer else thelettersagain()
+            else:
+                # Check if the pressed key is alphanumeric
+                if event.unicode.isalnum():
+                    self.user_input += event.unicode.lower()
+        return self    
+
+
+class thelettersagain(Scene):
+    def __init__(self):
+        super().__init__(
+            "Try again \n\nTap enter to write your answer!",
+            image=image6,
+            actions=["next"],
+            action_key_mapping={"next":pygame.K_RETURN}
+        )
+
+    def handle_input(self, event):
+     action = super().handle_input(event)
+     if action == "next":
+       return theletters()
+     else :
+         return None 
+
+
         
 class inthecastle(Scene):
 
     def __init__(self):
         super().__init__(
-            "Welcome to the castle where everything is made of gold.\nIf you touch anything, the castle will shatter on your head .\nonce  entering the castle, you  heard strange bird sounds and the sound of a raven bird.",
+            "Welcome to the castle where everything is made of gold.\nIf you touch anything, the castle will shatter on your head .",
             image=pygame.image.load("images/téléchargé (1).png"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -2098,7 +2447,7 @@ class puzzle(Scene):
     
     def __init__(self):
         super().__init__(
-            "what is this word!",
+            "By walking in the castle you heard a strang sound of a bird\n you are stuccked in this castle there is no way to escape\ni may help you if you helpp me solcing this enigma \nwhat is this word >>>\n\n.   -   ....   .  .-.   ..  .- \nap enter to write the answer !",
             image=pygame.image.load("images/morse code (1).png"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -2107,19 +2456,65 @@ class puzzle(Scene):
     def handle_input(self, event):
         action = super().handle_input(event)
         if action == "next":
-            return afterpuzzle()
+            return puzzekanswer()
         else:
             return None
         
        
         ####manque des images 
-        
+class puzzekanswer(Scene):
+    def __init__(self):
+        super().__init__(
+            "What is this word ?? \n . - .... . .-. .. .- ",
+            image = image8,
+            actions=[],
+            action_key_mapping={}
+        )
+        self.answer = "etheria"
+        self.user_input = ""
+
+    def draw(self, screen):
+        super().draw(screen)
+        font = pygame.font.SysFont("Comic Sans MS", 17)
+        user_input_surface = font.render(self.user_input, True, 'white')
+        screen.blit(user_input_surface, (10, 430))  
+
+    def handle_input(self, event):
+        action = super().handle_input(event)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                self.user_input = self.user_input[:-1]
+            elif event.key == pygame.K_RETURN:
+                return afterpuzzle() if self.user_input.lower() == self.answer else Scenepuzzel()
+            else:
+                # Check if the pressed key is alphanumeric
+                if event.unicode.isalnum():
+                    self.user_input += event.unicode.lower()
+        return self
+class Scenepuzzel(Scene):
+ 
+    def __init__(self):
+        super().__init__(
+            "Try again \nplease Tap enter to write your answer !",
+            image=image6,
+            actions=["next"],
+            action_key_mapping={"next":pygame.K_RETURN},
+            sound="sounds/wawawah.mp3"
+        )
+    def handle_input(self, event):
+        action = super().handle_input(event)
+        if action =="next":
+            return puzzekanswer()
+        else :
+            return None
+
+    
 class afterpuzzle(Scene):
     
     def __init__(self):
         super().__init__(
             "the third letter is I\ncongratulations the castle door is opened",
-            image=pygame.image.load("images/castle_door_open.png"),##image ta3 bab mftouh
+            image=pygame.image.load("images/image kharita1.png"),##image ta3 bab mftouh
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
             sound="sounds/creepy-echo-scary-and-spooky-sounds-9685.mp3"
@@ -2136,7 +2531,7 @@ class dooropened(Scene):
     def __init__(self):
         super().__init__(
             "After the castle door opened, you ran to the large door you had been looking for  that will take you to your home , \nhowever, you were still confused as to why you needed these letters. \nWhy do they tell me to memorize and give me these letters over and over again?",
-            image=pygame.image.load("images/large_door.png"),##image ta3 bab ftouh
+            image=pygame.image.load("images/golden door (1).png"),##image ta3 bab ftouh
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
             sound="sounds/creepy-echo-scary-and-spooky-sounds-9685.mp3"
@@ -2144,101 +2539,38 @@ class dooropened(Scene):
     def handle_input(self, event):
         action = super().handle_input(event)
         if action == "next":
-            return afterdooropened()
+            return Scene47()
         else:
             return None
 
-class afterdooropened(Scene):
 
-    def __init__(self):
-        super().__init__(
-            "You're finally in front of the door, \nbut wait—it's not opening unless you type a pin code there. \nYou're approaching it slowly, terrified of any other surprises.\n <e><t>\h>\e><r>\i><a> What actions would you like to take to review your options? ",
-            image=pygame.image.load("images/pin_code_door.png"),##need picture win ydkhal le code pin
-            actions=["next"],
-            action_key_mapping={"next": pygame.K_RETURN},
-            sound="sounds/creepy-echo-scary-and-spooky-sounds-9685.mp3"
-        )
-    def handle_input(self, event):
-        action = super().handle_input(event)
-        if action == "next":
-            return options() 
-        else:
-            return None
-        
-class options (Scene):
-
-    def __init__(self):
-        super().__init__(
-            "1. search for a hint in the door \n2.use a tree branch to broke the door",
-            image=pygame.image.load("images/options_image.png"),##need picture
-            actions=["1", "2"],
-            action_key_mapping={"1": pygame.K_1, "2": pygame.K_2},
-            sound="sounds/creepy-echo-scary-and-spooky-sounds-9685.mp3"
-        )
-    def handle_input(self, event):
-        action = super().handle_input(event)
-        if action == "1":
-            return None
-        elif action == "2":
-            return None
-        else:
-                return None
-        
-class afteroptions (Scene):
-
-    def __init__(self):
-        super().__init__(
-            "you looked in the door and you find A sign that said :the letters are numbers and the numbers are pins,in this land the magic wins",
-            image=pygame.image.load("images/letters (1).png"),##need picture
-             actions=["next"],
-            action_key_mapping={"next": pygame.K_RETURN},
-            sound="sounds/creepy-echo-scary-and-spooky-sounds-9685.mp3"
-        )
-    def handle_input(self, event):
-        action = super().handle_input(event)
-        if action == "next":
-            return endlevel1()
-        else:
-            return None
-        
-class endlevel1 (Scene):
-
-    def __init__(self):
-        super().__init__(
-            "the code pin is etheria but in numbers",
-            image=pygame.image.load("images/end_level.png"),##need picture
-             actions=["next"],
-            action_key_mapping={"next": pygame.K_RETURN},
-            sound="sounds/creepy-echo-scary-and-spooky-sounds-9685.mp3"
-        )
-    def handle_input(self, event):
-        action = super().handle_input(event)
-        if action == "next":
-            return None
-        else:
-            return None
-        
+SCREEN_WIDTH = 900
+SCREEN_HEIGHT = 600
 
 
-
-
-SCREEN_WIDTH = 605
-SCREEN_HEIGHT = 470
-
-pygame.init()
 image1 = pygame.image.load("images/téléchargement (19).png")
-current_scene = WoodsScene()
+current_scene = debut()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Alone In Etheria")
+
 running = True
 while running:
     screen.fill('black')
     current_scene.draw(screen)
+    scene_name = type(current_scene).__name__    #recuperer le nom de la scene courrante String
+    button.draw(screen , joueur, score, scene_name)
+    popup.draw(screen)
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        
         next_scene = current_scene.handle_input(event)
+
         if next_scene:
             current_scene = next_scene
+            
     pygame.display.flip()
+    
 
 pygame.quit()
