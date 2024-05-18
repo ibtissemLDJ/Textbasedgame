@@ -125,15 +125,16 @@ button = Button(100 , 100 , pause_img)
 
 
 class Scene:
-    def __init__(self, text, image=None, actions=None, action_key_mapping=None, sound=None, fontt="Comic Sans MS"):
+    def __init__(self, text, image=None, actions=None, action_key_mapping=None, sound=None, font="Comic Sans MS"):
         self.text = text
         self.image = image
         self.actions = actions or []
         self.action_key_mapping = action_key_mapping or {}
         self.sound = sound
+        self.font = font
         self.finished_typing = False  # Flag to indicate when typing animation is finished
         self.sound_played =False
-        
+        self.score=score
         
 
     def draw(self, screen):
@@ -153,13 +154,15 @@ class Scene:
             self.sound_played = True
 
         # Render multiline text on the dark background
-        font = pygame.font.SysFont(self.fontt, 17)#nsewerha 
+        font = pygame.font.SysFont(self.font, 17)#nsewerha 
+        score_text=font.render(f"score:{self.score}",1,'white')
+        screen.blit(score_text,(20,20))
         lines = self.text.split('\n')
-        y_offset = 410
+        y_offset = 430
         if self.finished_typing:
             for line in lines:
                 text_surface = font.render(line, True, 'white')
-                screen.blit(text_surface, (10, y_offset))
+                screen.blit(text_surface, (30, y_offset))
                 y_offset += font.get_height() + 5  # Move to the next line
                
         else:
@@ -170,7 +173,7 @@ class Scene:
                     text_so_far += char  # Add one character at a time
                     text_surface = font.render(text_so_far, True, 'white')
                 
-                    screen.blit(text_surface, (10, y_offset))
+                    screen.blit(text_surface, (30, y_offset))
                     pygame.display.flip()  # Update the display
                     time.sleep(0.1)  # Adjust the delay between characters (e.g., 0.1 seconds)
                 y_offset += font.get_height() + 5  # Move to the next line
@@ -185,17 +188,26 @@ class Scene:
                     print("Mapped Action:", action)
                     return action
         return None
+    def add_sub_score(self,point):
+       global score
+       c=self.score+point
+       if c>=0 :
+        score+=point
 #######################################IBTISSEM############################################################
 class background(Scene):
+
+       
     def __init__(self):
         super().__init__(
-            "\n\n\n\n\n                                                                 Tap enter to start playing XD",
-            image=pygame.image.load("images/Frame 1707478369 (2).png") ,
+            "\n\n\n\n\n                                                              Tap enter to start playing XD",
+            image=pygame.image.load("images/Frame 1707478374.png") ,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
             sound="sounds/theres-something-about-this-room-201112.mp3"
         )
-
+    def draw(self, screen):
+        pygame.draw.rect(screen, (0, 0, 0), (0, 400, 800, 170))
+        return super().draw(screen) 
     def handle_input(self, event):
         action = super().handle_input(event)
         if action == "next":
@@ -208,7 +220,7 @@ class background(Scene):
 class debut(Scene):
    def __init__(self):
         super().__init__(
-            "\n\n\n\n                                                                              \>",
+            "\n\n\n                                                                           \>",
             image= pygame.image.load("images/Frame 1707478369.png"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -219,9 +231,9 @@ class debut(Scene):
 
    def draw(self, screen):
         super().draw(screen)
-        font = pygame.font.SysFont("Comic Sans MS", 17)
+        font = pygame.font.SysFont(self.font, 17)
         user_input_surface = font.render(self.user_input, True, 'white')
-        screen.blit(user_input_surface, (435, 527))  
+        screen.blit(user_input_surface, (435, 515))  
 
    def handle_input(self, event):
         action = super().handle_input(event)
@@ -241,7 +253,7 @@ class debut(Scene):
 class name(Scene): 
     def __init__(self):
         super().__init__(
-            "Hello user!\nPlease enter your name:",
+            "Hello Dear Player ""!\nPlease Enter Your Name:",
             image=pygame.image.load("images/Frame 1707478369.png"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -251,9 +263,9 @@ class name(Scene):
 
     def draw(self, screen):
         super().draw(screen)
-        font = pygame.font.SysFont("Comic Sans MS", 17)
+        font = pygame.font.SysFont(self.font, 17)
         user_input_surface = font.render(self.user_input, True, 'white')
-        screen.blit(user_input_surface, (415, 300))  
+        screen.blit(user_input_surface, (270, 460))  
 
     def handle_input(self, event):
         action = super().handle_input(event)
@@ -275,7 +287,7 @@ class name(Scene):
 class nameCONTINUE(Scene): 
     def __init__(self):
         super().__init__(
-            "Hello user!\nPlease enter your name:",
+            "Welcom Back Dear Player\nPlease Enter Your Name:",
             image=pygame.image.load("images/Frame 1707478369.png"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -285,9 +297,9 @@ class nameCONTINUE(Scene):
 
     def draw(self, screen):
         super().draw(screen)
-        font = pygame.font.SysFont("Comic Sans MS", 17)
+        font = pygame.font.SysFont(self.font, 17)
         user_input_surface = font.render(self.user_input, True, 'white')
-        screen.blit(user_input_surface, (415, 300))  
+        screen.blit(user_input_surface, (270, 460))  
 
     def handle_input(self, event):
         action = super().handle_input(event)
@@ -312,17 +324,18 @@ class nameCONTINUE(Scene):
 class START(Scene):
     def __init__(self):
         super().__init__(
-            "Step-step  Step-step ... ",
+            "Runnnnnn  ... \nYOU ARE IN DANGERRRRR \n\n\n\n                                                                   Tap enter to continue...",
            
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
-            sound="sounds/theres-something-about-this-room-201112.mp3"
+            sound="sounds/theres-something-about-this-room-201112.mp3",
+            
         )
 
     def handle_input(self, event):
         action = super().handle_input(event)
         if action == "next":
-            return BlackScene()
+            return WoodsScene()
         else:
             return None
 ##########################################sofia############################################################
@@ -330,7 +343,7 @@ class START(Scene):
 class WoodsScene(Scene):
     def __init__(self):
         super().__init__(
-            "You are isolated in the woods,\nsurrounded by darkness and the distant  howls of wolves. ",
+            "You are isolated in the woods...\n\nsurrounded by darkness and the distant howls of wolves.\n\n\n                                                   Tap Enter To Continue",
             image=pygame.image.load("images/WoodsScene.png") ,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -349,7 +362,7 @@ class WoodsScene(Scene):
 class BlackScene(Scene):
     def __init__(self):
         super().__init__(
-            "You hear the sound of footsteps approaching",
+            "You heard the sound of footsteps approaching ...\n\n\n\n\n                                                   Tap Enter To Continue",
             image=pygame.image.load("images/Black_HauntedScene.png"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -365,7 +378,7 @@ class BlackScene(Scene):
 class HauntedScene(Scene):
     def __init__(self):
         super().__init__(
-            "As you navigate through the haunted woods,\nstrange sounds fill the air, making you feel uneasy.",
+            "Strange sounds fill the air, making you feel scary.\n\n\n\n\n                                                   Tap Enter To Continue",
             image=pygame.image.load("images/Black_HauntedScene.png"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -381,7 +394,7 @@ class HauntedScene(Scene):
 class  HauntedHouseScene(Scene):
     def __init__(self):
         super().__init__(
-            "You saw lights coming from a house nearly.\n  Scared of the dark woods you quickly,wloud you run toward the lights to find safety?.\n choose:\n  0:no\n 1:yes",
+            "As you navigated through the hunted woods, trying to find safety \nYou saw lights coming from a house nearly.\nWloud go to that house?\nTap(0) For: \"no\" \nTap(1) For :\"yes\" ",
             image=pygame.image.load("images/HauntedHouseScene.png"),
             actions=["yes", "no"],
             action_key_mapping={"yes": pygame.K_1, "no": pygame.K_0},
@@ -403,7 +416,7 @@ class  HauntedHouseScene(Scene):
 class GhostScene(Scene):
     def __init__(self):
         super().__init__(
-            "There are ghosts nearby to you running toward you with harmful utils  \nthere is nowhere to escape but that house\n do you want to go back to the lighthouse ?\n0:no\n 1:yes",
+            "Whyyyy would you stay in these woodss !!!! \nThe ghoasts are running toward youu ....\nthere is nowhere to escape but that house\nDo you still don't want to go to that house?\nTap(0) For:\"no\"\nTap(1) For:\"yes\"",
             image=pygame.image.load("images/ghostScene.png"),
             actions=["yes","no"],
             action_key_mapping={"yes": pygame.K_1, "no": pygame.K_0}
@@ -421,7 +434,7 @@ class Scene5(Scene):#done scene5
     
     def __init__(self):
         super().__init__(
-            "Inside a dark room.You hear a scary sounds coming from \nall directions. It's time to face the monsters luking inside \nCan you survive?\n\n",
+            "You are now in the house XD\nYou get in a dark room .You heard a scary sounds coming from all directions. \nIt's time to face the monsters luking inside ........ Can you survive?\n\n\n                                                   Tap Enter To Continue",
             image=imageScene5,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -442,7 +455,7 @@ class Scene5(Scene):#done scene5
 class Scene6(Scene):#done scene6
      def __init__(self):
         super().__init__(
-            "You encountered a circle of witches,seeing them spining \naround doing weird things.Everything turned black,and you \nexclaimed OHH NO,what's happening ?\nYOU FAINTED!...",
+            "You encountered a circle of witches,seeing them spining around doing weird things.\nEverything turned black             OHH NO,what's happening ?\nYOU FAINTED!...",
             image=imageScene6,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -460,7 +473,7 @@ class Scene6(Scene):#done scene6
 class Scene7(Scene):#done scene 7
     def __init__(self):
         super().__init__(
-            "A faint light was coming from afar.\nYou approached,opened the door,and suddenly \nthe gateway swallowed you \nYOU WILL NEVER GO BACK AGAIN!!!",
+            "Once you opened your eys slowely... you saw a faint light comming from  far\nYou approached,opened the door,and suddenly XXXXXX the gateway swallowed you there \nYOU WILL NEVER GO BACK AGAIN!!!\n\n\n                                                   Tap Enter To Continue",
             image=imageScene7,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -473,10 +486,11 @@ class Scene7(Scene):#done scene 7
             return Scene_level1_1()
         else:
             return None
+     
 class Scene_level1_1(Scene):#done debut of level
     def __init__(self):
         super().__init__(
-            "            \n\n              ETHERIA 'THE LOST LAND ',2024      ",
+            "\n\n                                                     ETHERIA ' THE LOST LAND ',2024      ",
             image=image_l1_1,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -497,7 +511,7 @@ class Scene_level1_1(Scene):#done debut of level
 class Scene_level1_2(Scene):#done scenne 2 de level
     def __init__(self):
         super().__init__(
-            "Etheria,a land where magic took it's first breath,\nwhere people can fly.Everything seems like it's \nnot real.It's a land full of illusions and mystery. ",
+            "Etheria, a land where magic took it's first breath, where people can fly. Everything seems like it's \nnot real. It's a land full of illusions and mystery.\n\n\n\n                                                   Tap Enter To Continue ",
             image=imageScene_level1_1,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -513,7 +527,7 @@ class Scene_level1_2(Scene):#done scenne 2 de level
 class Scene_level1_3(Scene):#senen 3 level
     def __init__(self):
         super().__init__(
-            "Bigboy:i am the man who will guid you through this level...\ni'll help you to find the door that will take you \nback to your world ",
+            "Bigboy: \"I am the man who will guid you here in this land ...\nI'll help you to find the door that will take you back to your world\"\n\n\n\n                                                   Tap Enter To Continue ",
             image=imageScene_level1_3,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -529,7 +543,7 @@ class Scene_level1_3(Scene):#senen 3 level
 class Scene_level1_4(Scene):#senne 4 level
     def __init__(self):
         super().__init__(
-            "there are a bunch of missions you have to complete,\nyou have to solve all the enigmas\n here is the card that will help you to find the door. ",
+            "Bigboy: \"There are a bunch of missions you have to complete, you have to solve all the enigmas so \nhere is the card that will help you to find the door.\" ",
             image=imageScene_level1_4,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -548,7 +562,7 @@ class Scene_level1_4(Scene):#senne 4 level
 class Scene_level1_5(Scene):#scene5 level
     def __init__(self):
         super().__init__(
-            "You are now at a crossroad ,there are two roads in front\n of you: 1)-the land road   2)-the sea road \nwhich one you gonna choose:type 1 if you choose the land\n road 2 if you choose the sea road"
+            "As you walked in the land ...you incountered a crossroad, there are two roads in front  of you: \n1)-the land road\n2)-the river road \nTap(0) For:\"Land Road\"\nTap(1) For:\"river  Road\""
             ,
             image=imageScene_level1_5,
             actions=["the land road","the sea road"],
@@ -568,7 +582,7 @@ class Scene_level1_5(Scene):#scene5 level
 class Scene_level1_s1l(Scene):#scene 6level
     def __init__(self):
         super().__init__(
-            "You arrived to a lack there is boat in front of you\n the lack seems dark and scary would you like \nto go by swiming or by the boat\n type '(1)' if you choose swiming and '(2)' if you choose \nthe boat ",
+            "You arrived to a lack there is boat in front of you the river  seems dark and scary would you like to go by :\n1) Swiming \n2) Boat\nType (1) For: \"swiming\" \nType (1) For: \"boat\" ",
             image=imageScene_level1_s1__,
             actions=["Swiming","boat"],
             action_key_mapping={"Swiming": pygame.K_1,"boat": pygame.K_2},
@@ -588,7 +602,7 @@ class Scene_level1_s1l(Scene):#scene 6level
 class Scene_level1_s1(Scene):#scene 7 sea road
     def __init__(self):
         super().__init__(
-            "The lack is dark and you saw a shadaw of animal in there \nAre you sure you wanna continue by swiming??\n type '(1)'for YES '(2)' for NO ",
+            "The lack is dark, BE AWARE...  You saw a shadaw of animal in there \nAre you sure you STILL wanna continue by swiming??\nType (1) For: \"YES\" \nType (2) For: \"NO\"",
             image=imageScene_level1_s1l,
             actions=["yes","no"],
             action_key_mapping={"yes": pygame.K_1,"no": pygame.K_2},
@@ -607,7 +621,7 @@ class Scene_level1_s1(Scene):#scene 7 sea road
 class Scene_level1_s2_swiming(Scene):#scene 8 swiming
     def __init__(self):
         super().__init__(
-            "The crocodil is aproaching you are about to drown the\n crocodil catches youby your leg with his big mouth and teeth\n you started bleading,Do you want to beat the crocodile ?\n type '(1)'for YES  '(2)'for NO ",
+            "Ohh nooo The crocodiles are aproaching !!!\n no nononnnnoo the crocodile bites you in your leg you started bleading :X \nDo you want to beat the crocodile ?\nType (1) For: YES \nType (2) For: NO ",
             image=imageScene_level1_s2_swiming,
             actions=["yes","no"],
             action_key_mapping={"yes": pygame.K_1,"no": pygame.K_2},
@@ -625,10 +639,10 @@ class Scene_level1_s2_swiming(Scene):#scene 8 swiming
 class Scene_level1_s2_beatyes(Scene):#game over#beating crocodile scene 9
     def __init__(self):
         super().__init__(
-            "You can't beat a big and huge crocodile !!!\n\n                  <<<<<<<<<<GAME OVER>>>>>>>>>>",
+            "Oh no the big crocodile dragged you to the bottom of the river \n\ni am sorry YOU DIED :X                                              <<<<<<<<<<GAME OVER>>>>>>>>>>\n                                                        Tap \"R\" to start again :)",
             image=imageScene_level1_s2_beatyes,
-            actions=["next"],
-            action_key_mapping={"next": pygame.K_RETURN},
+           actions=["next","repeat"],
+            action_key_mapping={"next": pygame.K_RETURN,"repeat":pygame.K_r},
             sound="sounds/sound game over.mp3"
         )
 
@@ -637,14 +651,17 @@ class Scene_level1_s2_beatyes(Scene):#game over#beating crocodile scene 9
         if action == "next":
             return None
         else:
-            return None
+            if action == "repeat":
+                return Scene_level1_1()
+            else:
+                return None 
 class Scene_level1_s2_beatno(Scene):#game over no beat crocodile scene 10
     def __init__(self):
         super().__init__(
-            "You died the crocodile ate you all !!!\n \n            <<<<<<<<<<GAME OVER>>>>>>>>>>",
+            "Oh no the big crocodile dragged you to the bottom of the river \n\ni am sorry YOU DIED :X                                              <<<<<<<<<<GAME OVER>>>>>>>>>>\n \n\n if you want to play again tap \"R\"",
             image=imageScene_level1_s2_beatyes,
-            actions=["next"],
-            action_key_mapping={"next": pygame.K_RETURN},
+            actions=["next","repeat"],
+            action_key_mapping={"next": pygame.K_RETURN,"repeat":pygame.K_r},
             sound="sounds/sound game over.mp3"
         )
 
@@ -653,11 +670,14 @@ class Scene_level1_s2_beatno(Scene):#game over no beat crocodile scene 10
         if action == "next":
             return None
         else:
-            return None
+            if action == "repeat":
+                return Scene_level1_1()
+            else:
+                return None 
 class Scene_level1_s2_noswiming(Scene):#scene 11
     def __init__(self):
         super().__init__(
-            "You took the right decision,that lack contains a scary crocodile !!\nYou are swiming again to the land ,you found the land road and the boat \ndo you want to continue by boat or by land \ntype '(1)'for boat '(2)' for land ",
+            "You took the right decision :),that river contains a scary crocodile !!\nYou are swiming again to the land,There is a boat there do you wanna take it ?\nType (1) For: \"Yes\" \nType (2) For: \"No\" ",
             image=imageScene_level1_s2_noswiming,
             actions=["boat","land"],
             action_key_mapping={"baot": pygame.K_1,"land": pygame.K_2},
@@ -672,10 +692,11 @@ class Scene_level1_s2_noswiming(Scene):#scene 11
             return DesertScene()#sofia
         else:
             return None
+            
 class Scene_level1_s2_noswiming_boat(Scene):#scene 12
     def __init__(self):
         super().__init__( 
-            "you are on the boat now...the road is kinda safe,but wait\nsuddenly the air current is huge the boat is about to rocks \ndo you want to continue by boat or by land \ntype '(1)'for boat '(2)' for land ",
+            "You are on the boat now... You've never been in a boat before, that's amazing!!!!!\nBut wait, suddenly the wind is huge, and the boat is about to rock.\nDo you still wanna continue by the boat \nType (1) For: Yes \nType (2) For: No",
             image=imageScene_level1_s2_noswiming,
             actions=["boat","land"],
             action_key_mapping={"boat": pygame.K_1,"land": pygame.K_2},
@@ -693,10 +714,10 @@ class Scene_level1_s2_noswiming_boat(Scene):#scene 12
 class Scene_level1_s2_noswiming_boat_continue_gameover(Scene):#game over scene 13
     def __init__(self):
         super().__init__(
-            "The air current is gone you checked of the boat is okay\nyou saw water in the boat!!! wath's that you screamed,it's\n seams like there is a lot of water in there you checked again\nand you saw a big hole in the boat OHH no you are about to drown again !!\n            <<<<<<<<<<GAME OVER>>>>>>>>>>",
+            "The wind has gone, but when you checked the boat, you saw water in it!!! What to do??\nOHH no you drown again !!\n                                                                   <<<<<<<<<<GAME OVER>>>>>>>>>>",
             image=imageScene_level1_s2_beatyes,
-            actions=["next"],
-            action_key_mapping={"next": pygame.K_RETURN},
+           actions=["next","repeat"],
+            action_key_mapping={"next": pygame.K_RETURN,"repeat":pygame.K_r},
             sound="sounds/sound game over.mp3"
         )
 
@@ -705,13 +726,15 @@ class Scene_level1_s2_noswiming_boat_continue_gameover(Scene):#game over scene 1
         if action == "next":
             return None
         else:
-            return None 
-
+            if action == "repeat":
+                return Scene_level1_1()
+            else:
+                return None 
 ##############################################Sofia  ######################################################   
 class GhostScene(Scene):
     def __init__(self):
         super().__init__(
-            "There are ghosts nearby to you running toward you with harmful utils  \nthere is nowhere to escape but that house\n do you want to go back to the lighthouse ?\n0:no\n 1:yes",
+            "There are ghosts nearby, running toward you with dangerous weapons.\nThere is nowhere to escape but that house\nDo you want to go back ?\nTap (0) For: No\nTap (1) For: Yes",
             image=pygame.image.load("images/ghostScene.png"),
             actions=["yes","no"],
             action_key_mapping={"yes": pygame.K_1, "no": pygame.K_0}
@@ -724,20 +747,29 @@ class GhostScene(Scene):
             return End1Scene()
         else:
             return None
-class End1Scene(Scene):
+class End1Scene(Scene):#est ce que hna kayen game over 
     def __init__(self):
         super().__init__(
-            "death is coming.....",
-            image=pygame.image.load("images/End1Scene.png")
+            "<<<<GAME OVER>>>>\n\n\n Tap 'r'  to replay the game ",
+            image=pygame.image.load("images/End1Scene.png"),
+            actions=["next","replay"],
+            action_key_mapping={"next": pygame.K_RETURN,"replay":pygame.K_r}
         )
 
     def handle_input(self, event):
-        
+        action = super().handle_input(event)
+        if action=="replay":
+             return WoodsScene()
+        else:
          return None  
 class DesertScene(Scene):
     def __init__(self):
         super().__init__(
-            "You started walking and discovering this magic place,\n  you want to  go and find the door to lead you to your home  …\n by walking forward you met a strong animal, it seems like a dragon,\n the dragon talked to you : I guess you’re in the right path\n but be ready a lot of surprises are coming on.",
+            "You started walking and discovering this magical place,\n"
+            "you want to go and find the door that will lead you home...\n"
+            "By walking forward, you meet a strang animal; it seems like a dragon.\n"
+            "The dragon talks to you: 'I guess you’re on the right path,\n"
+            "but be ready, a lot of surprises are coming your way.'",
             image=pygame.image.load("images/DesertScene.png"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -748,11 +780,15 @@ class DesertScene(Scene):
         if action == "next":
             return BoxClosedScene()
         else:
-            return None       
+          
+                return None
+                  
 class BoxClosedScene(Scene):
     def __init__(self):
         super().__init__(
-            "While admiring this magical city you saw something lighting out there.\n You approach to see what is it,oh! This is a big golden box,\n do you want to open it ?\n0:no\n 1:yes",
+            "While admiring this magical city, you saw something glowing in the distance.\n"
+            "You approach to see what it is. Oh! It's a big golden box.\n"
+            "Do you want to open it?\nTap (0) For: No\nTap (1) For: Yes" ,
             image=pygame.image.load("images/BoxClosedScene.png"),
             actions=["yes","no"],
             action_key_mapping={"yes": pygame.K_1, "no": pygame.K_0}
@@ -768,7 +804,7 @@ class BoxClosedScene(Scene):
 class BoxOpenedScene(Scene):
     def __init__(self):
         super().__init__(
-            "Congratulations !!! You got 3 points your score is 3.",
+            "\n******************************\n    CONGRATULATIONS!    \n******************************\nYou have gained 3 points!\n******************************\n",
             image=pygame.image.load("images/BoxOpenedScene.png"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -784,7 +820,10 @@ class BoxOpenedScene(Scene):
 class ThinkScene(Scene):
     def __init__(self):
         super().__init__(
-            "You are still thinking of that big golden box ?\n Are you sure you don’t want to open it ?\n0:no\n 1:yes",
+            "You are still thinking of that big golden box!\n"
+            "Are you sure you don’t want to open it?\n"
+            "Tap (0) For: No\n"
+            "Tap (1) For: Yes",
             image=pygame.image.load("images/BoxClosedScene.png"),
             actions=["yes","no"],
             action_key_mapping={"yes": pygame.K_1, "no": pygame.K_0}
@@ -802,7 +841,10 @@ class ThinkScene(Scene):
 class TheftScene(Scene):
     def __init__(self):
         super().__init__(
-            "Oops, the little dwarf steals your map,\n what to do right now !! The dwarf told you that you have to solve this question to get back \nyour map :I am taken once every minute, twice every moment, but never in an hour. What am I? \nTap enter to write your answer !",
+            "Oops, the little dwarf has stolen your map.\n"
+            "What should you do now? The dwarf tells you that you have to solve this riddle to get back\n"
+            "your map: I am taken once every minute, twice every moment, but never in an hour. What am I?\n"
+            "Tap enter to write your answer!",
             image=pygame.image.load("images/TheftScene.png"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -817,7 +859,7 @@ class TheftScene(Scene):
 class theM(Scene):
     def __init__(self):
         super().__init__(
-            " enter your answer : ",
+            "Enter your answer : ",
             image= enigma,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -846,7 +888,9 @@ class theM(Scene):
 class HelpScene(Scene):
     def __init__(self):
         super().__init__(
-            "do you wanna help ?! this hint will cost you 1 point\n 0:no\n 1:yes",
+            "Do you want to help? This hint will cost you 1 point.\n"
+            "Tap (0) For: No\n"
+            "Tap (1) For: Yes",
             image=pygame.image.load("images/TheftScene.png"),
             actions=["yes","no"],
             action_key_mapping={"yes": pygame.K_1, "no": pygame.K_0}
@@ -866,7 +910,7 @@ class HelpScene(Scene):
 class ScoreScene(Scene):
     def __init__(self):
         super().__init__(
-            "sorry you don't have enough points",
+            "Oops! Looks like you're a bit short on points for that. ¯\_(ツ)_/¯",
             image=pygame.image.load("images/TheftScene.png"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -882,7 +926,7 @@ class ScoreScene(Scene):
 class HelpActScene(Scene):
     def __init__(self):
         super().__init__(
-            "The answer is a letter\n\n\n\nTap enter to fill your answer!",
+            "The answer have to be :::Letter:::\n\n\n\nTap enter to fill your answer!",
             image=pygame.image.load("images/TheftScene.png"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -897,7 +941,7 @@ class HelpActScene(Scene):
 class NoHelpScene(Scene):
     def __init__(self):
         super().__init__(
-            "try again... \n\n\n\n Tap enter to write your answer!",
+            "Oh oh! You should try again. ~~~\n\n\n\nTap enter to write your answer!",
             image=pygame.image.load("images/TheftScene.png"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -909,10 +953,13 @@ class NoHelpScene(Scene):
             return theM()
         else :
             return None
+      
 class MapScene(Scene):
     def __init__(self):
         super().__init__(
-            "hooohoo ! You got it right, here is your map, \nbut wait I got a letter for you've got to remember it \nuntil the end of the level the letter is R",
+            "Hooohoo! You got it right! Here is your map.\n"
+            "But wait, I've got a letter for you. You've got to remember it\n"
+            "until the end of the level. The letter is 'R'.",
             image=pygame.image.load("images/MapScene.png"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -927,7 +974,11 @@ class MapScene(Scene):
 
 class BroomScene(Scene):
     def __init__(self):
-        super().__init__("You’re so happy because the dwarf gave you  back your map Ooh,\n is this a magic broom ?! Do you want to ride it ?? \n0:no\n1:yes",
+        super().__init__(
+            "You’re so happy because the dwarf gave you back your map!\n"
+            "Oh, is this a magic broom?! Do you want to ride it?\n"
+            "Tap (0) for: No\n"
+            "Tap (1) for: Yes",
             image=pygame.image.load("images/BroomScene.png"),
             actions=["yes","no"],
             action_key_mapping={"yes": pygame.K_1, "no": pygame.K_0}
@@ -943,7 +994,9 @@ class BroomScene(Scene):
 class ibtissamScene(Scene) :
     def __init__(self):
         super().__init__(
-            "hooohoo ! You got it right, here is your map, \nbut wait I got a letter for you've got to remember it \nuntil the end of the level the letter is R",
+            "Hooohoo! You got it right! Here is your map.\n"
+            "But wait, I've got a letter for you. You've got to remember it\n"
+            "until the end., the letter is 'R'.",
             image=pygame.image.load("images/MapScene.png"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -960,7 +1013,9 @@ class ibtissamScene(Scene) :
 class MagicBroom(Scene):
     def __init__(self):
         super().__init__(
-            "You are flying with this magic broom. \nOmg, it's a fantastic view from above. \n\n\nTap Enter To continue.",
+            "You're flying with this magic broom.\n"
+            "Wow, the view from above is fantastic!\n\n\n\n"
+            "Tap Enter to continue.",
             image=Broom,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -979,7 +1034,8 @@ class MagicBroom(Scene):
 class Bird(Scene):
     def __init__(self):
         super().__init__( 
-            "Oh! No, a bird is coming toward you ,  what to do? \n\n\nTap Enter To continue.",
+            "Oh no! A bird is coming toward you! What will you do?\n\n\n\n\n"
+            "Tap Enter to continue.",
             image=bird ,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -1000,7 +1056,9 @@ class Bird(Scene):
 class Avoid(Scene):
     def __init__(self):
         super().__init__(
-            "Avoid the bird. Oh, oh, that was close. \nThis adventure on the broom is not easy \n\n\nTap Enter To continue.",
+            "You dodge the bird just in time, feeling the excitement of this magical ride.\n"
+            "This adventure on the broom is full of surprises!\n\n\n"
+            "Tap Enter to continue.",
             image=Broom,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -1016,7 +1074,10 @@ class Avoid(Scene):
 class Wind(Scene):
     def __init__(self):
         super().__init__(
-            "Becareful there is a big wind what to do know \ndo you wanna get down from this broom ?\n\n\n(1: Yes, 0: No)",
+            "Be careful, there's a strong wind. What will you do now?\n"
+            "Do you want to get down from this broom?\n\n\n"
+            "Tap (1) For: Yes\n"
+            "Tap (0) For: No",
             image=wind,
             actions=["yes", "no"],
             action_key_mapping={"yes": pygame.K_1, "no": pygame.K_0},
@@ -1036,7 +1097,11 @@ class Wind(Scene):
 class Amazone(Scene):
     def __init__(self):
         super().__init__(
-            "Ohhh no, you're falling. \nYou are now in a place where there are only long trees. \nThe place here is not like where you were, \nit's huge, it's like the Amazon. \n\nTap Enter To continue.",
+            "Oh no, you're falling.\n"
+            "You find yourself in a place with towering trees.\n"
+            "This place is vastly different from where you were.\n"
+            "It's enormous, like the Amazon.\n\n"
+            "Tap Enter to continue.",
             image=amazone,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -1053,7 +1118,8 @@ class Amazone(Scene):
 class Climb(Scene):
     def __init__(self):
         super().__init__(
-            "You saw a big tree leading to a cave, climb the tree \n\n\nTap Enter To continue.",
+            "You spot a large tree leading to a cave. You decide to climb the tree.\n\n\n\n\n"
+            "Tap Enter to continue.",
             image=tree,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -1068,7 +1134,9 @@ class Climb(Scene):
 class Treeclimb(Scene):
     def __init__(self):
         super().__init__(
-            "The tree is so long that it takes you too much time to arrive at the cave. \nWhile climbing the tree, you find a bird with these children \n\n\nTap Enter To continue.", 
+            "The tree is so long that it takes you too much time to arrive at the cave.\n"
+            "While climbing the tree, you encounter a bird with its young.\n\n\n"
+            "Tap Enter to continue.", 
             image= tree ,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -1083,7 +1151,10 @@ class Treeclimb(Scene):
 class Attack(Scene):
     def __init__(self):
         super().__init__(
-            "The bird starts attacking you. \nWhat should you do right now? \n\n\n(1: give him food, 0: kill his children)",
+            "The bird starts attacking you.\n"
+            "What should you do?\n\n\n"
+            "Tap (1) For: Give him food\n"
+            "Tap (0) For: Kill his children",
             image= brbranch ,
             actions=["give him food", "kill his children"],
             action_key_mapping={"give him food": pygame.K_1, "kill his children": pygame.K_0},
@@ -1100,7 +1171,10 @@ class Attack(Scene):
 class Bad(Scene):
     def __init__(self):
         super().__init__(
-            "The bird got angrier, and it is attacking you more and more. \nWhat should you do?? \nhelp yourself \n\n\n(1: excuse to him and give him food, 0: just fightm back)",
+            "The bird is getting angrier, and it's attacking you more aggressively.\n"
+            "What should you do?? Help yourself.\n\n\n"
+            "Tap (1) For: Excuse to him and give him food\n"
+            "Tap (0) For: Just fight back",
             image= brbranch,
             actions=["excuse to him and give him food", "just fightm back"],
             action_key_mapping={"excuse to him and give him food": pygame.K_1, "just fightm back": pygame.K_0},
@@ -1118,14 +1192,19 @@ class Bad(Scene):
 class Fight(Scene):
     def __init__(self):
         super().__init__(
-            "Fight him back. , \nohh no, you lost your equilibrium, \nyou're falling down from the tree .",
-             image = Gameover,
-             sound="sounds/game-over-31-179699.mp3"
+            "Try to reason with him.\n"
+            "Oh no, you lost your balance.\n"
+            "You're falling down from the tree.\n\n\n"
+            "Tap Enter to continue.",
+            image = Gameover,
+            sound="sounds/game-over-31-179699.mp3"
         )
 class Good(Scene):
     def __init__(self):
         super().__init__(
-            "You helped the bird, and gave him food. \nThe bird is happy and wants to help you continue climbing the tree faster  \n\n\nTap Enter To continue.",
+            "You helped the bird by giving it food.\n"
+            "In return, the bird happily assists you in climbing the tree faster.\n\n\n"
+            "Tap Enter to continue.",
             image=eat,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -1141,8 +1220,9 @@ class Good(Scene):
 class Turboo(Scene):
     def __init__(self):
         super().__init__(
-            "The bird says, ....ohoo here is a turbo, \nyou can use it to climb the tree, but.....  \n\n\nTap Enter To continue.",
-             image = turbo,
+            "The bird says, 'Ohoo, here is a turbo. You can use it to climb the tree, but...'\n"
+            "Tap Enter to continue.",
+            image = turbo,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
         )
@@ -1157,7 +1237,8 @@ class Turboo(Scene):
 class Work(Scene):
     def __init__(self):
         super().__init__(
-            "I want to make it work for you until you solve this enigma  \n\n\nTap Enter To continue.",
+           "I'll only provide the turbo after you solve this enigma.\n\n\n\n"
+           "Tap Enter to continue.",
             image = turbo,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -1169,11 +1250,11 @@ class Work(Scene):
             return Presence() 
         else:
             return None 
-        
+   
 class Presence(Scene):
     def __init__(self):
         super().__init__(
-            " enter your answer : ",
+            "Enter your answer : ",
             image= enigma,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -1183,7 +1264,7 @@ class Presence(Scene):
 
     def draw(self, screen):
         super().draw(screen)
-        font = pygame.font.SysFont("Comic Sans MS", 17)
+        font = pygame.font.SysFont(self.font, 17)
         user_input_surface = font.render(self.user_input, True, 'white')
         screen.blit(user_input_surface, (10, 430))  
 
@@ -1203,9 +1284,11 @@ class Presence(Scene):
 class Tryagain(Scene):
     def __init__(self):
         super().__init__(
-            "You are going to continue without this turbo \nthe tree will never end, and you will never arrive at the cave  \n\nEnter your answer.",
-             image=enigma,
-             actions=["next"],
+            "You will continue without the turbo.\n"
+            "The tree will never end, and you will never arrive at the cave.\n\n"
+            "Tap Enter to put your answer.",
+            image=enigma,
+            actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
         )
         self.answer = "oxygen"
@@ -1233,8 +1316,12 @@ class Tryagain(Scene):
 class Success(Scene):
     def __init__(self):
         super().__init__(
+            """
+            "You will continue without the turbo."
+            "The tree will never end, and you will never arrive at the cave.\n\n\n"
 
-            "You got the right answer, the answer is oxygen. \nOh, while flying up to the end of the tree so fast and approaching the cave, \nyou heard the bird saying, Don't forget the letter 'I' \n\nTap Enter To continue.",
+            Tap Enter to put your answer.
+            """,
             image=dbcave,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -1251,7 +1338,13 @@ class Success(Scene):
 class Cave(Scene):
     def __init__(self):
         super().__init__(
-            "You arrived at the cave, finally!! \nYou heard the sound of bats, and then you ignored it and continued...\nto walk around in the cave .....continue walking..... \n\n\nTap Enter To continue.",
+            """
+            As you arrive at the cave, a sense of accomplishment fills you: "You arrived at the cave, finally!!" 
+            But amidst the darkness, the sound of bats echoes faintly. Ignoring the eerie noise, you press on, determined to explore further...
+            You walk cautiously through the winding passages, the echoes of your footsteps mingling with the distant sounds of dripping water. The cave seems endless as you continue your journey... 
+
+            Tap Enter to continue
+            """,
             image=cave,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -1268,8 +1361,14 @@ class Cave(Scene):
 class Sound(Scene):
     def __init__(self):
         super().__init__(
-            "You heard the sound of the bear roaring. \nA big bear was running toward you. \nOh no, what to do? There is no way to escape \n\n\nTap Enter To continue.",
-             image=bear,
+            """
+            As the roar of a bear reaches your ears, your heart skips a beat: "You heard the sound of the bear roaring." 
+            A massive creature charges toward you, its ferocity undeniable: "A big bear was running toward you." 
+            Panic sets in as you realize there's no escape route: "Oh no, what to do? There is no way to escape." 
+
+            Tap Enter To continue.
+            """,
+            image=bear,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
             sound="sounds/tiger-roar-loudly-193229.mp3"
@@ -1285,7 +1384,10 @@ class Sound(Scene):
 class Startfight(Scene):
     def __init__(self):
         super().__init__(
-        "            START FIGHTING \n\n\nTap Enter To continue.",
+            """
+            >>> START FIGHITING >>>\n\n
+            Tap Enter to continue.
+            """,
             image=bear,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -1302,7 +1404,12 @@ class Startfight(Scene):
 class Trya(Scene):
     def __init__(self):
         super().__init__(
-            "You tried enough, do you still want to try ? \n\n\n(1: Yes, 0: No).",
+            """
+            You tried enough, do you still want to try?
+
+            Type (1) for Yes
+            Type (0) for No
+            """,
             image=enigma,
             actions=["yes", "no"],
             action_key_mapping={"yes": pygame.K_1, "no": pygame.K_0},
@@ -1321,7 +1428,7 @@ class Trya(Scene):
 class Tyag(Scene):
     def __init__(self):
         super().__init__(
-            "    try again  \n\nEnter your answer:",
+            "Try again  \n\nEnter your answer:",
              image=enigma,
              actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -1351,7 +1458,9 @@ class Tyag(Scene):
 class Try(Scene):
     def __init__(self):
         super().__init__(
-        "It's not ending that way, you've being climbing for 15 minutes. \n\n\nTap Enter To continue.",
+            "The tree is so long that it takes you too much time to arrive at the cave. \n"
+            "While climbing the tree, you encounter a bird with its young. \n\n\n"
+            "Tap Enter to continue...",
     
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -1367,7 +1476,9 @@ class Try(Scene):
 class LosePoints(Scene):
     def __init__(self):
         super().__init__(
-        "You used 3 points. \nOh, you finally arrived at the cave \n\n\nTap Enter To continue.",
+            "<<You used 3 points.>>\n"
+            "Oh, you finally arrived at the cave \n\n\n\n"
+            "Tap Enter To continue." ,
             image=dbcave,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -1383,10 +1494,12 @@ class LosePoints(Scene):
 class FightBear(Scene):
     def __init__(self):
         super().__init__(
-            "Oh! No! You're fighting against a big bear. \nTo win against the bear, you have to roll a higher number on the die.\nPress Enter To roll the dice.",
-             image = dé ,
-             actions=["next"],
-             action_key_mapping={"next": pygame.K_RETURN}
+            "Oh No! You're fighting against a BIG BEAR . \n"
+            "To win against the bear, you have to roll a higher number on the die.\n"
+            "Press Enter To roll the dice.",
+            image = dé ,
+            actions=["next"],
+            action_key_mapping={"next": pygame.K_RETURN}
         )
 
     def handle_input(self, event):
@@ -1421,7 +1534,8 @@ class Result(Scene):
 class Tie(Scene):
     def __init__(self):
         super().__init__(
-            "It's a tie! \n\n\nTap Enter To continue.",
+            "Dom Dom it's a tie XD"
+            " \n\n\nTap Enter To Try again.",
             image= tryagain,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -1437,8 +1551,11 @@ class Tie(Scene):
 #######################################manel###############################################################
 class Scene38(Scene):
     def __init__(self):
-        super().__init__(
-            "You red the enigma writting in the wall of the cave, it says: \nThe first box is in the left of the third one, the fourth one is in the right of the second one,  \nand the third one is in the left of the fourth. How are the boxes organised?? \nTap enter to write your answer !",
+        super().__init__(##this enigma to change 
+            "You red the enigma writting in the wall of the cave, it says: \n"
+            "'The first box is in the left of the third one, the fourth one is in the right of the second one,\n"
+            "and the third one is in the left of the fourth. How are the boxes organised??\n "
+            "Tap enter to write your answer !",
             image=image4,
             actions=["next"],
             action_key_mapping={"next":pygame.K_RETURN}
@@ -1453,7 +1570,7 @@ class Scene38(Scene):
 class Scene38answer(Scene):
    def __init__(self):
         super().__init__(
-            "enter your answer : ",
+            "Tap your answer : ",
             image= enigma,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -1463,7 +1580,7 @@ class Scene38answer(Scene):
 
    def draw(self, screen):
         super().draw(screen)
-        font = pygame.font.SysFont("Comic Sans MS", 17)
+        font = pygame.font.SysFont(self.font, 17)
         user_input_surface = font.render(self.user_input, True, 'white')
         screen.blit(user_input_surface, (10, 430))  
 
@@ -1484,7 +1601,8 @@ class Scene38answer(Scene):
 class Scene39B(Scene):
     def __init__(self):
         super().__init__(
-            "Try again \nplease Tap enter to write your answer !",
+            "Try again XD \n"
+            "please Tap enter to write your answer !",
             image=image6,
             actions=["next"],
             action_key_mapping={"next":pygame.K_RETURN},
@@ -1497,12 +1615,11 @@ class Scene39B(Scene):
         else :
             return None
 
-
-
 class Scene39(Scene):
     def __init__(self):
         super().__init__(
-            "Congratulations \n\nTap ENTER to continue",
+            "\n******************************\n    CONGRATULATIONS!    \n******************************\nYou have gained 3 points!\n******************************\n",
+        
             image=image2,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -1522,7 +1639,7 @@ class Scene39(Scene):
 class Scene40(Scene):
     def __init__(self):
         super().__init__(
-            "Finnaly you're goig out from the cave. There are golden pieces in the walls. \nDo you want to take some ?(yes:1/no:0)  ",
+            "Finnaly you're getting out from the cave \(^^)/.""There are  some golden pieces in the walls. \nDo you want to take some ?\nTap (1) For :Yes\nTap(0) For :No  ",
             image=image2,
             actions=["yes","no"],
             action_key_mapping={"yes": pygame.K_1, "no": pygame.K_0},
@@ -1538,15 +1655,13 @@ class Scene40(Scene):
         else:
             return None
 
-
-
 class Random(Scene):
 
     def __init__(self):
         random_number = random.randint(1, 15)
         if random_number < 8 :
          super().__init__(
-            "Oh noo this gold is so precious,the cave ruined into your head. \n\nGAME OVER !!",
+            "Oh noo this gold is so precious,the cave ruined into your head. \n\n   <<<<<<GAME OVER !!>>>>>",
             image=image5,
             actions=[],
             action_key_mapping={},
@@ -1573,7 +1688,7 @@ class Random(Scene):
 class Scene41(Scene):
     def __init__(self):
         super().__init__(
-            "You arrived to the end of the cave, you noticed a big sphinx with the body of a human \nand the face of a horse. \nDo you want to go there ?(yes:1/no:0)",
+            "You arrived to the end of the cave, you noticed a big sphinx with the body of a human and the face of a horse. \nDo you want to go there or just avoid him? \n Tap (1) For : go to the sphinix \nTap (0) For : Avoid the sphinix ",
             image=image3,
             actions=["yes","no"],
             action_key_mapping={"yes":  pygame.K_1, "no": pygame.K_0},
@@ -1591,7 +1706,7 @@ class Scene41(Scene):
 class Scene41B(Scene):
     def __init__(self):
         super().__init__(
-            "There is nothing other to do!! You have to go to the sphinx \n \nTap Enter to continue.... ",
+            "There is nothing other to do!! You have to go to the sphinx \and see what he will said...\nMaybe he's kind (^^) \nTap Enter to continue.... ",
             image=image3,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -1656,7 +1771,7 @@ class Scene43B(Scene):
  
     def __init__(self):
         super().__init__(
-            "Try again \nplease Tap enter to write your answer !",
+            "<<<<Try again>>>> \nplease Tap enter to write your answer !",
             image=image6,
             actions=["next"],
             action_key_mapping={"next":pygame.K_RETURN},
@@ -1673,7 +1788,7 @@ class Scene43B(Scene):
 class Scene44(Scene):
     def __init__(self):
         super().__init__(
-            " CONGRATULATIONS!! \nThe third letter is 'I', now you can go. Good luck in your road. \nTap Enter to continue.....",
+            " CONGRATULATIONS!!\(OO)/ \nThe third letter is 'I', now you can go :). Good luck in your road. \nTap Enter to continue.....",
             image = image7,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -1705,7 +1820,7 @@ class Scene45(Scene):
 class Scene46(Scene):
     def __init__(self):
         super().__init__(
-            " You are approaching the door  slowly......scared from any other surprise.\n \n \nTap ENTER to continue....",
+            "You are running to that door..... scared from any other surprise.\n \n \nTap ENTER to continue....",
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
         )
@@ -1720,7 +1835,7 @@ class Scene46(Scene):
 class Scene47(Scene):
     def __init__(self):
         super().__init__(
-            "You are finnaly in front of the door but wait it's closed.\nYou saw somthing like if it's where you write a pin code. \n< > < > < > < > < > < > < >  \nTap ENTER to continue.... ",
+            "You're finnaly in front of the door but wait it's closed X(.\nYou saw something like a lock where you enter a pin code. \n< > < > < > < > < > < > < >  \nTap ENTER to continue.... ",
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
         )
@@ -1737,7 +1852,7 @@ class Scene47(Scene):
 class Scene48(Scene):
     def __init__(self):
         super().__init__(
-            "What do you want to do ?.\n1/ Search for a hint in the door. \n2/ Use a tree branch to broke the door.",
+            "What do you want to do ?.\n1/ Search for a hint in the door. \n2/ Use a tree branch to broke the door.\nTap (1 or 2) to pick your choice ",
             actions=["one","two"],
             action_key_mapping={"one": pygame.K_1 , "two": pygame.K_2}
         )
@@ -1754,7 +1869,7 @@ class Scene48(Scene):
 class Scene48B(Scene):
     def __init__(self):
         super().__init__(
-            "Oops the door can't be broke. T.\n1/ Search for a hint in the door. \n2/ Use a tree branch to broke the door.",
+            "Oops the door can't be broke. T.\n1/ Search for a hint in the door. \n2/ Use a tree branch to broke the door.\nTap (1 or 2) to pick your choice",
             actions=["one","two"],
             action_key_mapping={"one": pygame.K_1 , "two": pygame.K_2}
         )
@@ -1772,7 +1887,7 @@ class Scene48B(Scene):
 class Scene49(Scene):
     def __init__(self):
         super().__init__(
-            "you looked in the door and you find somthing saying: \n 'The letters are numbers and the numbers are pins, in this land the magic wins. \nTape enter to write your answer !",
+            "you looked in the door and you find somthing saying: \n 'The letters are numbers and the numbers are pins, in this land the magic wins.' \nTape enter to write your answer !",
             actions=["next"],
             action_key_mapping={"next":pygame.K_RETURN}
         )
@@ -1788,7 +1903,7 @@ class Scene49(Scene):
 class Scene49answer(Scene):
   def __init__(self):
         super().__init__(
-            " enter your answer : ",
+            "Enter your answer : ",
             image= enigma,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -1818,7 +1933,7 @@ class Scene49answer(Scene):
 class Scene49B(Scene):
     def __init__(self):
         super().__init__(
-            "Try again \n\nTap enter to write your answer!",
+            "<<<<Try again>>>.XD\n\nTap enter to write your answer!",
             image=image6,
             actions=["next"],
             action_key_mapping={"next":pygame.K_RETURN}
@@ -1836,7 +1951,7 @@ class Scene49B(Scene):
 class Scene50(Scene):
     def __init__(self):
         super().__init__(
-            "Congratulations!!! \n",
+            "*************Congratulations!!!************* \n",
             image=image2,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -1852,7 +1967,7 @@ class Scene50(Scene):
 class NotbromScene(Scene):
     def __init__(self):
         super().__init__(
-            "You decided to not continue with the Broom,\nBut now you're confused on how to go to that Door\n You layed down in the earth and looked up in the sky.",
+            "You decided to not continue with the Broom,\nBut now you're confused on how to go to that Door\nYou layed down in the earth and looked up in the sky.\nTap enter continue...",
             image=pygame.image.load("images/Nuvem no céu com estilo pixel art _ Vetor Premium.jpg"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -1899,7 +2014,7 @@ class FlowerEnigma(Scene):
     def __init__(self):
        
         super().__init__(
-            "enigma : \" the first box is in the left of the third one, the fourth one\nis in the right of the second one and the third one is in the left of \nthe fourth one \",\nhow are the boxese organized ?\n\n\n\n Please Tap enter you give your answer",
+            "Enigma : \"The first box is in the left of the third one, the fourth one\nis in the right of the second one and the third one is in the left of \nthe fourth one \",\nhow are the boxese organized ?\n\n\n\n Please Tap enter you give your answer",
             image=pygame.image.load("images/Frame 1707478366 (5).png"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -1920,7 +2035,7 @@ class FlowerEnigma(Scene):
 class floweranswer(Scene):
    def __init__(self):
         super().__init__(
-            " enter your answer : ",
+            "Enter your answer : ",
             image= enigma,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -1951,7 +2066,7 @@ class floweranswer(Scene):
 class FlowerHappy (Scene):
     def __init__(self):
         super().__init__(
-            "Plant : \"Great answerrr, hohooo! now i can tell you about the door but first \nThere is a letter you have to remebre until the end of the game \nThe letter is : \'E\' \" \n\"The door is  after these woods follow them and you will find a big castel,\n pass the castel you will find the door XD ",
+            "Plant : \"Great answerrr, hohooo! now i can tell you about the door but first \nThere is a letter you have to remebre until the end of the game \nThe letter is : \'E\' \" \n\"The door is  after these woods follow them and you will find a big castel,\nPass the castel you will find the door XD ",
             image=image1,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -1973,7 +2088,7 @@ class FlowerError(Scene):
     def __init__(self):
        
         super().__init__(
-            "Oppss... oh no bud you typped the wrong answerr !!! \nWhat to do now ? \nLet\'s try againn :) \ntap (1)",
+            "Oppss... oh no bud you typped the wrong answerr X(!!! \nWhat to do now ? \nLet\'s try againn :) \ntap (1)",
             image=image1,
             actions=["one"],
             action_key_mapping={"one": pygame.K_1},
@@ -1996,7 +2111,7 @@ class SlidingDoor(Scene):
     def __init__(self):
         
         super().__init__(
-           "By walking through the woods, you suddenly saw a sliding door\nit opens ... and close ... open... close...\n to walk to that door tap (1) ",
+           "By walking through the woods, you suddenly saw a sliding door\nit opens ... and close ... open... close...\nTo walk to that door tap (1) ",
            image=image1,
             actions=["one"],
             action_key_mapping={"one": pygame.K_1},
@@ -2020,7 +2135,7 @@ class Doorclosed(Scene):
     def __init__(self):
         
         super().__init__(
-           "once you arrived to that door, its open You get in andddd !!!! \nohhhh noo you are stucked there\nThere is nowhere to escape the door is closed,\nif you want to walk around tap (enter)",
+           "Once you arrived to that door, its open You get in andddd !!!! \nohhhh noo you are stucked therexxxxx\nThere is nowhere to escape the door is closed,\nif you want to walk around tap (enter)",
             image=image1,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -2044,7 +2159,7 @@ class Wlakingaround(Scene):
     def __init__(self):
         
         super().__init__(
-            "you started discovering what is this place, it's seems like a train\na broken one, is that possible a train in a woods?? \n but then you remembered you are in magic land so you didn't care \nTo continue searching tap (enter)",
+            "You started discovering what is this place, it's seems like a train\na broken one, is that possible a train in a woods?? \n but then you remembered you are in magic land so you didn't care \nTo continue searching tap (enter)",
             image=image1,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -2067,7 +2182,7 @@ class StrangSmell(Scene):
     def __init__(self):
         
         super().__init__(
-            "TOOOT TOOOOOTT ... THE  SOUND OF ALERTS IN THE TRAIN \n FILL THE AIR ...  What is this smell... \noh oh oh YOU CAN'T BREAAATH, This is a toxic gaze.\nto break the door tap (1)\nto search the source of the gaze tap (2)",
+            "TOOOT TOOOOOTT ... THE  SOUND OF ALERTS IN THE TRAIN \n FILL THE AIR ...  What is this smell?? \noh oh oh YOU CAN'T BREAAATH, This is a toxic gaze.\nto break the door tap (1)\nto search the source of the gaze tap (2)",
             image=image1,
             actions=["one","two"],
             action_key_mapping={"one": pygame.K_1 ,"two": pygame.K_2},
@@ -2086,13 +2201,13 @@ class StrangSmell(Scene):
         woods_sound = pygame.mixer.Sound("sounds/theres-something-about-this-room-201112.mp3")
         woods_sound.play()
         woods_sound.play()
-######################################################################################################################################
+
 class BreakDoor(Scene):
 
     def __init__(self):
         
         super().__init__(
-            "The Doors are so secure, you broked your hand !! \nhurry up the gaze will KILL you,\nDo you wanna recover your hand (cost: 2 pnts) Tap (1)\nDo you wanna search the source of the smell tap(2)" ,
+            "The Doors are so secure, you broked your hand !! \nhurry up the gaze will KILL you,\nIf you wanna recover (cost: 2 pnts) Tap (1)\nDo you wanna search the source of the smell tap(2)" ,
             image=image1,
             actions=["one","two"],
             action_key_mapping={"one": pygame.K_1 ,"two": pygame.K_2},
@@ -2101,6 +2216,7 @@ class BreakDoor(Scene):
     def handle_input(self, event):
         action = super().handle_input(event)
         if action == "one":
+            super().add_sub_score(-2)
             return Recover()
         elif action == "two":
             return SearchScene()
@@ -2117,7 +2233,7 @@ class Recover(Scene):
     def __init__(self):
         
         super().__init__(
-            "You are recovered now tota points :  "+ points +"\nDo you wanna search the source of the smell tap(enter)",
+            "You are recovered now tota points :  "+ score +"\nDo you wanna search the source of the smell tap(enter)",
             image=image1,
             actions=["next"],
             action_key_mapping={"next":pygame.K_RETURN},
@@ -2192,7 +2308,7 @@ class Peaceofwood(Scene):
     def __init__(self):
         
         super().__init__(
-            "You took the pease of wood, do you want to :\nBreak the gaze pipe (1) \nTake the paper instead (2) \nTake the mask instead (3)",
+            "You took the peace of wood, do you want to :\nBreak the gaze pipe (1) \nTake the paper instead (2) \nTake the mask instead (3)",
              image=image1,
             actions=["one","two","three"],
             action_key_mapping={"one": pygame.K_1 ,"two": pygame.K_2,"three": pygame.K_3},
@@ -2218,7 +2334,7 @@ class gazeDie(Scene):
     def __init__(self):
         
         super().__init__(
-            "The gaze start leaking so fast, you couldn't breath....\n IT WAS A TOXIC GAZE \n YOU ........ DIED X(\n\nYOU WANT TO RESTART TAP (R) ",
+            "The gaze start leaking so fast, you couldn't breath....\nIT WAS A TOXIC GAZE \nYOU ........ DIED X(\n\nYOU WANT TO RESTART TAP (R) ",
             image=image1,
             actions=["restart"],
             action_key_mapping={"restart": pygame.K_r},
@@ -2244,7 +2360,7 @@ class mask(Scene):
     def __init__(self):
         
         super().__init__(
-            "You took the mask! you are half secure \n the mask is (mou9ata3) the gaze may kill you \nBECAREFULL ,\n what do you want to take now ? The paper (1), peace of wood (2) ",
+            "You took the mask! you are half secure \nthe mask is (mou9ata3) the gaze may kill you \nBECAREFULL ,\nwhat do you want to take now ? \nTap (1) For : The paper\nTap (1) For :peace of wood",
              image=image1,
             actions=["one","two"],
             action_key_mapping={"one": pygame.K_1 ,"two": pygame.K_2,},
@@ -2271,7 +2387,7 @@ class Paper(Scene):
         
         super().__init__(
             "Once you took the paper you notice something written there \n\"SOLVE THIS EGNIGMA TO STOP THE GAZE\"\n\" I'm alwyas in front of you but you can never see me... \nYou use me everyday yet you hardly notice me who am i? \" \ntap enter to write te answer",
-             image=image1,
+            image=image1,
             actions=["next"],
             action_key_mapping={"next":pygame.K_RETURN},
             sound="sounds/theres-something-about-this-room-201112.mp3"
@@ -2293,7 +2409,7 @@ class Paper(Scene):
 class TapEnigma(Scene):
   def __init__(self):
         super().__init__(
-            " Tap your answer : ",
+            "Tap your answer : ",
             image= enigma,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -2303,7 +2419,7 @@ class TapEnigma(Scene):
 
   def draw(self, screen):
         super().draw(screen)
-        font = pygame.font.SysFont("Comic Sans MS", 17)
+        font = pygame.font.SysFont(self.font, 17)
         user_input_surface = font.render(self.user_input, True, 'white')
         screen.blit(user_input_surface, (10, 430))  
 
@@ -2362,7 +2478,7 @@ class  aftertrain(Scene):
 class  aftercastle(Scene): 
     def __init__(self):
         super().__init__(
-            " When you arrive at the castle\n, there is a large gold door that is so big that you can barely see the end. \nIt is written there\n: if you arrived to the castle, so for sure you solved three enigmas, \nand you have two letters by your hand, \ngive me the two letters and I'll give you the third one and let you in. \nTap enter to write the letters",
+            "When you arrive at the castle\n, there is a large golden door that is so big that you can barely see it's end. \nIt is written there\n: 'if you arrived to the castle, so for sure you solved three enigmas, \nand you have two letters in your hand, \ngive me the two letters and I'll give you the third one and let you in.' \nTap enter to write the letters",
             image=pygame.image.load("images/golden door (1).png"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -2409,7 +2525,7 @@ class theletters(Scene):
 class thelettersagain(Scene):
     def __init__(self):
         super().__init__(
-            "Try again \n\nTap enter to write your answer!",
+            "<<<<Try again>>>>XD \n\nTap enter to write your answer!",
             image=image6,
             actions=["next"],
             action_key_mapping={"next":pygame.K_RETURN}
@@ -2428,7 +2544,7 @@ class inthecastle(Scene):
 
     def __init__(self):
         super().__init__(
-            "Welcome to the castle where everything is made of gold.\nIf you touch anything, the castle will shatter on your head .",
+            "Welcome to the castle where everything is made of gold! **<>**.\nIf you touch anything, the castle will shatter on your head .",
             image=pygame.image.load("images/téléchargé (1).png"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -2447,7 +2563,7 @@ class puzzle(Scene):
     
     def __init__(self):
         super().__init__(
-            "By walking in the castle you heard a strang sound of a bird\n you are stuccked in this castle there is no way to escape\ni may help you if you helpp me solcing this enigma \nwhat is this word >>>\n\n.   -   ....   .  .-.   ..  .- \nap enter to write the answer !",
+            "As you walk through the castle, you hear a strange sound echoing through the halls.\nYou realize you are trapped with no way to escape.\n\n\"I may help you if you help me solve this enigma,\" a mysterious voice whispers.\n\nWhat is this word: .-.. .. -.- .-?\n\nTap Enter to write the answer!",
             image=pygame.image.load("images/morse code (1).png"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -2475,7 +2591,7 @@ class puzzekanswer(Scene):
 
     def draw(self, screen):
         super().draw(screen)
-        font = pygame.font.SysFont("Comic Sans MS", 17)
+        font = pygame.font.SysFont(self.font, 17)
         user_input_surface = font.render(self.user_input, True, 'white')
         screen.blit(user_input_surface, (10, 430))  
 
@@ -2495,7 +2611,7 @@ class Scenepuzzel(Scene):
  
     def __init__(self):
         super().__init__(
-            "Try again \nplease Tap enter to write your answer !",
+            "<<<<Try again>>>> XD \nplease Tap enter to write your answer !",
             image=image6,
             actions=["next"],
             action_key_mapping={"next":pygame.K_RETURN},
@@ -2513,7 +2629,7 @@ class afterpuzzle(Scene):
     
     def __init__(self):
         super().__init__(
-            "the third letter is I\ncongratulations the castle door is opened",
+            "the third letter is \"I\"\ncongratulations the castle door is opened",
             image=pygame.image.load("images/image kharita1.png"),##image ta3 bab mftouh
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
@@ -2549,7 +2665,7 @@ SCREEN_HEIGHT = 600
 
 
 image1 = pygame.image.load("images/téléchargement (19).png")
-current_scene = debut()
+current_scene =background()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Alone In Etheria")
 
