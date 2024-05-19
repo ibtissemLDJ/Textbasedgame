@@ -199,7 +199,7 @@ class background(Scene):
        
     def __init__(self):
         super().__init__(
-            "\n\n\n\n\n                                                              Tap enter to start playing XD",
+            "                                                                       Tap enter to start playing XD",
             image=pygame.image.load("images/Frame 1707478374.png") ,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -879,7 +879,7 @@ class theM(Scene):
 class HelpScene(Scene):
     def __init__(self):
         super().__init__(
-            "Do you want to help? This hint will cost you 1 point.\n"
+            "Do you need help? This hint will cost you <1> point.\n"
             "Tap (0) For: No\n"
             "Tap (1) For: Yes",
             image=pygame.image.load("images/TheftScene.png"),
