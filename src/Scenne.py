@@ -202,8 +202,7 @@ class background(Scene):
             "\n\n\n\n\n                                                              Tap enter to start playing XD",
             image=pygame.image.load("images/Frame 1707478374.png") ,
             actions=["next"],
-            action_key_mapping={"next": pygame.K_RETURN},
-            sound="sounds/theres-something-about-this-room-201112.mp3"
+            action_key_mapping={"next": pygame.K_RETURN}
         )
     def draw(self, screen):
         pygame.draw.rect(screen, (0, 0, 0), (0, 400, 800, 170))
@@ -328,7 +327,7 @@ class START(Scene):
            
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
-            sound="sounds/theres-something-about-this-room-201112.mp3",
+            sound="sounds/wood.mp3"
             
         )
 
@@ -344,10 +343,9 @@ class WoodsScene(Scene):
     def __init__(self):
         super().__init__(
             "You are isolated in the woods...\n\nsurrounded by darkness and the distant howls of wolves.\n\n\n                                                   Tap Enter To Continue",
-            image=pygame.image.load("images/WoodsScene.png") ,
+            image=pygame.image.load("images/photo_2024-05-19_12-11-38.jpg") ,
             actions=["next"],
-            action_key_mapping={"next": pygame.K_RETURN},
-            sound="sounds/theres-something-about-this-room-201112.mp3"
+            action_key_mapping={"next": pygame.K_RETURN}
         )
 
     def handle_input(self, event):
@@ -363,7 +361,7 @@ class BlackScene(Scene):
     def __init__(self):
         super().__init__(
             "You heard the sound of footsteps approaching ...\n\n\n\n\n                                                   Tap Enter To Continue",
-            image=pygame.image.load("images/Black_HauntedScene.png"),
+            image=pygame.image.load("images/photo_2024-05-19_12-11-38.jpg"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
         )
@@ -379,7 +377,7 @@ class HauntedScene(Scene):
     def __init__(self):
         super().__init__(
             "Strange sounds fill the air, making you feel scary.\n\n\n\n\n                                                   Tap Enter To Continue",
-            image=pygame.image.load("images/Black_HauntedScene.png"),
+            image=pygame.image.load("images/photo_2024-05-19_12-11-38.jpg"),
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
         )
@@ -394,11 +392,10 @@ class HauntedScene(Scene):
 class  HauntedHouseScene(Scene):
     def __init__(self):
         super().__init__(
-            "As you navigated through the hunted woods, trying to find safety \nYou saw lights coming from a house nearly.\nWloud go to that house?\nTap(0) For: \"no\" \nTap(1) For :\"yes\" ",
-            image=pygame.image.load("images/HauntedHouseScene.png"),
+            "As you navigated through the hunted woods, trying to find safety \nYou saw lights coming from a house nearly.\nWould you go to that house?\nTap(0) For: \"no\" \nTap(1) For :\"yes\" ",
+            image=pygame.image.load("images/photo_2024-05-19_12-11-38.jpg"),
             actions=["yes", "no"],
-            action_key_mapping={"yes": pygame.K_1, "no": pygame.K_0},
-            sound="sounds/theres-something-about-this-room-201112.mp3"
+            action_key_mapping={"yes": pygame.K_1, "no": pygame.K_0}
         )
 
     def handle_input(self, event):
@@ -438,7 +435,7 @@ class Scene5(Scene):#done scene5
             image=imageScene5,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
-            sound="sounds/scary.mp3"
+            sound="sounds/HOUSE1.mp3"
         )
 
     def handle_input(self, event):
@@ -447,9 +444,7 @@ class Scene5(Scene):#done scene5
             return Scene6()
         else:
             return None
-    '''def show(self):
-        woods_sound = pygame.mixer.Sound("C:\\Users\\hp\\Desktop\\projet plu\\Textbasedgame\\sounds\\sacry sound.mp3")
-        woods_sound.play()'''
+   
    
     
 class Scene6(Scene):#done scene6
@@ -458,7 +453,7 @@ class Scene6(Scene):#done scene6
             "You encountered a circle of witches,seeing them spining around doing weird things.\nEverything turned black             OHH NO,what's happening ?\nYOU FAINTED!...",
             image=imageScene6,
             actions=["next"],
-            action_key_mapping={"next": pygame.K_RETURN},
+            action_key_mapping={"next": pygame.K_RETURN}
             
         )
 
@@ -476,7 +471,7 @@ class Scene7(Scene):#done scene 7
             "Once you opened your eys slowely... you saw a faint light comming from  far\nYou approached,opened the door,and suddenly XXXXXX the gateway swallowed you there \nYOU WILL NEVER GO BACK AGAIN!!!\n\n\n                                                   Tap Enter To Continue",
             image=imageScene7,
             actions=["next"],
-            action_key_mapping={"next": pygame.K_RETURN},
+            action_key_mapping={"next": pygame.K_RETURN}
             
         )
 
@@ -503,11 +498,7 @@ class Scene_level1_1(Scene):#done debut of level
             return Scene_level1_2()
         else:
             return None
-    def show(self):
-
-       
-        woods_sound = pygame.mixer.Sound("sounds\singing-club-of-birds_nature-sound-204240.mp3")
-        woods_sound.play()
+   
 class Scene_level1_2(Scene):#done scenne 2 de level
     def __init__(self):
         super().__init__(
@@ -515,7 +506,7 @@ class Scene_level1_2(Scene):#done scenne 2 de level
             image=imageScene_level1_1,
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN},
-            
+            sound="sounds/birds.mp3"
         )
 
     def handle_input(self, event):
@@ -530,7 +521,7 @@ class Scene_level1_3(Scene):#senen 3 level
             "Bigboy: \"I am the man who will guid you here in this land ...\nI'll help you to find the door that will take you back to your world\"\n\n\n\n                                                   Tap Enter To Continue ",
             image=imageScene_level1_3,
             actions=["next"],
-            action_key_mapping={"next": pygame.K_RETURN},
+            action_key_mapping={"next": pygame.K_RETURN}
             
         )
 
@@ -556,9 +547,7 @@ class Scene_level1_4(Scene):#senne 4 level
             return Scene_level1_5()
         else:
             return None
-    def show(self):
-        woods_sound = pygame.mixer.Sound("sounds\space_line-27593.mp3")
-        woods_sound.play()
+    
 class Scene_level1_5(Scene):#scene5 level
     def __init__(self):
         super().__init__(
@@ -566,7 +555,7 @@ class Scene_level1_5(Scene):#scene5 level
             ,
             image=imageScene_level1_5,
             actions=["the land road","the sea road"],
-            action_key_mapping={"the land road": pygame.K_1, "the sea road": pygame.K_2},
+            action_key_mapping={"the land road": pygame.K_1, "the sea road": pygame.K_2}
             
         )
 
@@ -585,7 +574,7 @@ class Scene_level1_s1l(Scene):#scene 6level
             "You arrived to a lack there is boat in front of you the river  seems dark and scary would you like to go by :\n1) Swiming \n2) Boat\nType (1) For: \"swiming\" \nType (1) For: \"boat\" ",
             image=imageScene_level1_s1__,
             actions=["Swiming","boat"],
-            action_key_mapping={"Swiming": pygame.K_1,"boat": pygame.K_2},
+            action_key_mapping={"Swiming": pygame.K_1,"boat": pygame.K_2}
             
         )
 
@@ -605,7 +594,7 @@ class Scene_level1_s1(Scene):#scene 7 sea road
             "The lack is dark, BE AWARE...  You saw a shadaw of animal in there \nAre you sure you STILL wanna continue by swiming??\nType (1) For: \"YES\" \nType (2) For: \"NO\"",
             image=imageScene_level1_s1l,
             actions=["yes","no"],
-            action_key_mapping={"yes": pygame.K_1,"no": pygame.K_2},
+            action_key_mapping={"yes": pygame.K_1,"no": pygame.K_2}
             
         )
 
@@ -624,7 +613,7 @@ class Scene_level1_s2_swiming(Scene):#scene 8 swiming
             "Ohh nooo The crocodiles are aproaching !!!\n no nononnnnoo the crocodile bites you in your leg you started bleading :X \nDo you want to beat the crocodile ?\nType (1) For: YES \nType (2) For: NO ",
             image=imageScene_level1_s2_swiming,
             actions=["yes","no"],
-            action_key_mapping={"yes": pygame.K_1,"no": pygame.K_2},
+            action_key_mapping={"yes": pygame.K_1,"no": pygame.K_2}
             
         )
 
@@ -807,7 +796,9 @@ class BoxOpenedScene(Scene):
             "\n******************************\n    CONGRATULATIONS!    \n******************************\nYou have gained 3 points!\n******************************\n",
             image=pygame.image.load("images/BoxOpenedScene.png"),
             actions=["next"],
-            action_key_mapping={"next": pygame.K_RETURN}
+            action_key_mapping={"next": pygame.K_RETURN},
+            sound="sounds/points.mp3"
+
         )
         super().add_sub_score(3)
     def handle_input(self, event):
