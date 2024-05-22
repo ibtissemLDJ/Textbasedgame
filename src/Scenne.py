@@ -101,7 +101,7 @@ class Scene:
             screen.blit(self.image, (0, 0))
 
         # Dark background for text
-        pygame.draw.rect(screen, (0, 0, 0), (0, 400, 900, 170))
+        pygame.draw.rect(screen, (0, 0, 0), (0, 400, 900, 300))
 
         # Play sound if available
         if self.sound:
@@ -167,8 +167,10 @@ class background(Scene):
        
     def __init__(self):
         super().__init__(
+          "",
            
             image=pygame.image.load("images/Design sans titre (1).png") ,
+
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
         )
@@ -369,7 +371,7 @@ class  HauntedHouseScene(Scene):
             "As you navigated through the hunted woods, trying to find safety \n"
             "You saw lights coming from a house nearly.\nWould you go to that house?\n"
             "Tap(0) For: \"no\" \nTap(1) For :\"yes\" ",
-            image=pygame.image.load("images/photo_2024-05-21_22-28-42.png"),
+            image=pygame.image.load("images/Premium Photo _ Bright illuminated horror house against dark gloomy background (2) 1.png"),
             actions=["yes", "no"],
             action_key_mapping={"yes": pygame.K_1, "no": pygame.K_0}
         )
@@ -450,7 +452,7 @@ class Scene7(Scene):#done scene 7
             "you saw a faint light comming from  far\n"
             "You approached, opened the door and suddenly XXXXXX the gateway swallowed you there \n"
             "YOU WILL NEVER GO BACK AGAIN!!!\n\n\n                                                   Tap Enter To Continue",
-            image= pygame.image.load("images/Premium Vector _ Open door (5).png"),
+            image= pygame.image.load("images/Premium Vector _ Open door (3) 1.png"),
 
             actions=["next"],
             action_key_mapping={"next": pygame.K_RETURN}
@@ -556,6 +558,7 @@ class Scene_level1_s1l(Scene):#scene 6level
     def __init__(self):
         super().__init__(
             "You arrived to a lack there is boat in front of you the river  seems dark and scary would you like to go by :\n1) Swiming \n2) Boat\nType (1) For: \"swiming\" \nType (1) For: \"boat\" ",
+           
             actions=["Swiming","boat"],
             action_key_mapping={"Swiming": pygame.K_1,"boat": pygame.K_2}
             
@@ -593,6 +596,7 @@ class Scene_level1_s2_swiming(Scene):#scene 8 swiming
     def __init__(self):
         super().__init__(
             "Ohh nooo The crocodiles are aproaching !!!\n no nononnnnoo the crocodile bites you in your leg you started bleading :X \nDo you want to beat the crocodile ?\nType (1) For: YES \nType (2) For: NO ",
+            image=pygame.image.load("images/Frame 2 (2).png")
             actions=["yes","no"],
             action_key_mapping={"yes": pygame.K_1,"no": pygame.K_2}
             
@@ -612,7 +616,7 @@ class Scene_level1_s2_beatyes(Scene):#game over#beating crocodile scene 9
             "Oh no the big crocodile dragged you to the bottom of the river \n\n"
             "i am sorry YOU DIED :X\n"
             "                                              <<<<<<<<<<GAME OVER>>>>>>>>>>\n                                                        Tap \"R\" to start again :)",
-            
+            image= pygame.image.load("images/Frame 6.png")
            actions=["next","repeat"],
             action_key_mapping={"next": pygame.K_RETURN,"repeat":pygame.K_r},
             sound="sounds/sound game over.mp3"
@@ -633,7 +637,7 @@ class Scene_level1_s2_beatno(Scene):#game over no beat crocodile scene 10
             "Oh no the big crocodile dragged you to the bottom of the river \n\n"
             "i am sorry YOU DIED :X\n"
             "                                              <<<<<<<<<<GAME OVER>>>>>>>>>>\n \n\n if you want to play again tap \"R\"",
-            
+            image=pygame.image.load("images/Frame 6.png")
             actions=["next","repeat"],
             action_key_mapping={"next": pygame.K_RETURN,"repeat":pygame.K_r},
             sound="sounds/sound game over.mp3"
@@ -652,6 +656,7 @@ class Scene_level1_s2_noswiming(Scene):#scene 11
     def __init__(self):
         super().__init__(
             "You took the right decision :),that river contains a scary crocodile !!\nYou are swiming again to the land,There is a boat there do you wanna take it ?\nType (1) For: \"Yes\" \nType (2) For: \"No\" ",
+            image=pygame.image.load("images/Frame 4.png")
             actions=["boat","land"],
             action_key_mapping={"baot": pygame.K_1,"land": pygame.K_2},
             
@@ -672,6 +677,7 @@ class Scene_level1_s2_noswiming_boat(Scene):#scene 12
             "You are on the boat now... You've never been in a boat before, that's amazing!!!!!\n"
             "But wait, BECAREFULLL  you are aproaching to a watterfall.\n"
             "Do you still wanna continue by the boat \nType (1) For: Yes \nType (2) For: No",
+            image=pygame.image.load("images/Frame 4.png")
             actions=["boat","land"],
             action_key_mapping={"boat": pygame.K_1,"land": pygame.K_2},
             
@@ -688,7 +694,8 @@ class Scene_level1_s2_noswiming_boat(Scene):#scene 12
 class Scene_level1_s2_noswiming_boat_continue_gameover(Scene):#game over scene 13
     def __init__(self):
         super().__init__(
-            "The wind has gone, but when you checked the boat, you saw water in it!!! What to do??\nOHH no you drown again !!\n                                                                   <<<<<<<<<<GAME OVER>>>>>>>>>>",
+            "oh you went back, but when you checked the boat, you saw water in it!!! What to do??\nOHH no you drown again !!\n                                                                   <<<<<<<<<<GAME OVER>>>>>>>>>>",
+           
            actions=["next","repeat"],
             action_key_mapping={"next": pygame.K_RETURN,"repeat":pygame.K_r},
             sound="sounds/sound game over.mp3"
@@ -708,6 +715,7 @@ class GhostScene(Scene):
     def __init__(self):
         super().__init__(
             "There are ghosts nearby, running toward you with dangerous weapons.\nThere is nowhere to escape but that house\nDo you want to go back ?\nTap (0) For: No\nTap (1) For: Yes",
+             image = pygame.image.load ("images/Haunted Woods - Woodland Monsters - Dark Forest Horror Aesthetics - Ghosts & Horrors - Artworks (1) 1.png"),
             actions=["yes","no"],
             action_key_mapping={"yes": pygame.K_1, "no": pygame.K_0}
         )
@@ -855,7 +863,7 @@ class theM(Scene):
 class HelpScene(Scene):
     def __init__(self):
         super().__init__(
-            "Do you want to help? This hint will cost you 1 point.\n"
+            "Do you need help? This hint will cost you <1> point.\n"
             "Tap (0) For: No\n"
             "Tap (1) For: Yes",
             actions=["yes","no"],
@@ -2570,7 +2578,7 @@ SCREEN_HEIGHT = 600
 
 
 
-current_scene =background()
+current_scene = background()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Alone In Etheria")
 
