@@ -33,7 +33,7 @@ def charger_partie(joueur):
                 score = int(fichier.readline().strip())
                 scene = fichier.readline().strip()
                 if nom == joueur:
-                    return nom, score, scene
+                    return score, scene
 
     except FileNotFoundError:
         print("Aucune sauvegarde trouvée.")
@@ -278,6 +278,8 @@ class nameCONTINUE(Scene):
 
     def handle_input(self, event):
         action = super().handle_input(event)
+        global score
+       
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_BACKSPACE:
                 self.user_input = self.user_input[:-1]
@@ -285,7 +287,7 @@ class nameCONTINUE(Scene):
                 if self.user_input:  # Check if there's input
                     self.joueur = self.user_input  # Save user input to joueur
                     self.user_input = ""  # Reset user input for next use
-                    nom , score, scene = charger_partie(joueur)
+                    score, scene = charger_partie(self.joueur)
                     scene1 = get_scene_by_name(scene)
                     return scene1  # Return next scene if needed
             elif event.unicode.isalnum():
@@ -850,7 +852,7 @@ class theM(Scene):
         super().draw(screen)
         font = pygame.font.SysFont("Arial", 17)
         user_input_surface = font.render(self.user_input, True, 'white')
-        screen.blit(user_input_surface, (10, 430))  
+        screen.blit(user_input_surface, (250, 430))  
 
     def handle_input(self, event):
         action = super().handle_input(event)
